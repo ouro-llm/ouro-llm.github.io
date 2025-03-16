@@ -16,7 +16,7 @@ jobs:
       - name: Commit and Push
         working-directory: .
         run: |
-          git init
+          # git init
           git checkout -b gh-pages
           git add -A
           git -c user.name='nwiad' -c user.email='daiwn21@mails.tsinghua.edu.cn' commit -m 'deploy github pages for preview' 
