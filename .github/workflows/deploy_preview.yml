@@ -28,7 +28,7 @@ jobs:
           # Personal Access Token 下面讲 
           personal_token: ${{ secrets.PREVIEW_TOKEN }}
           # 指定push的仓库  
-          external_repository: Puffin-Zero/puffin-zero-preview.github.io.git
+          external_repository: Puffin-Zero/puffin-zero-preview.github.io
           # 指定push的分支
           publish_branch: main
           # push 的目录
