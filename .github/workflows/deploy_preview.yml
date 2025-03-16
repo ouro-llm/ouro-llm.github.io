@@ -25,6 +25,8 @@ jobs:
       - name: 部署到公共仓库
         uses: peaceiris/actions-gh-pages@v3
         with:
+          # Personal Access Token 下面讲 
+          personal_token: ${{ secrets.PREVIEW_TOKEN }}
           # 指定push的仓库  
           external_repository: Puffin-Zero/puffin-zero-preview.github.io.git
           # 指定push的分支
