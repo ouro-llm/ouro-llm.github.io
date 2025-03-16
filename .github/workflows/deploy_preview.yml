@@ -13,25 +13,11 @@ jobs:
         with:
           persist-credentials: true
           fetch-depth: 0
-      # - name: Commit and Push
-      #   working-directory: .
-      #   run: |
-      #     git init
-      #     git checkout -b gh-pages
-      #     git add -A
-      #     git -c user.name='nwiad' -c user.email='daiwn21@mails.tsinghua.edu.cn' commit -m 'deploy github pages for preview' 
-      #     git remote add origin https://github.com/Puffin-Zero/puffin-zero-preview.github.io.git
-      #     git push origin gh-pages -f -q
-      - name: 部署到公共仓库
+      - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
-          # Personal Access Token 下面讲 
-          personal_token: ${{ secrets.PREVIEW_TOKEN }}
-          # 指定push的仓库  
-          external_repository: puffin-zero-org/puffin-zero-preview.github.io
-          # 指定push的分支
+          personal_token: ${{ secrets.PREVIEW_TOKEN }} 
+          external_repository: puffin-zero-preview/puffin-zero-preview.github.io
           publish_branch: main
-          # push 的目录
           publish_dir: .
-          # 是否只保留最新的提交记录
           force_orphan: true
