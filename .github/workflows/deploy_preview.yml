@@ -1,0 +1,24 @@
+name: Deploy Preview
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+      - name: Commit and Push
+        working-directory: .
+        run: |
+          git init
+          git checkout -b gh-pages
+          git add -A
+          git -c user.name='nwiad' -c user.email='daiwn21@mails.tsinghua.edu.cn' commit -m 'deploy github pages for preview' 
+          git remote add origin https://github.com/Puffin-Zero/puffin-zero-preview.git
+          git push origin gh-pages -f -q
