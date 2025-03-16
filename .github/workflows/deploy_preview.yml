@@ -17,8 +17,8 @@ jobs:
         working-directory: .
         run: |
           git init
-          git checkout -b gh-pages
+          git checkout -b main
           git add -A
           git -c user.name='nwiad' -c user.email='daiwn21@mails.tsinghua.edu.cn' commit -m 'deploy github pages for preview' 
-          git remote add origin https://github.com/Puffin-Zero/puffin-zero-preview.git
+          git remote add origin https://github.com/Puffin-Zero/puffin-zero-preview.github.io.git
           git push origin gh-pages -f -q
