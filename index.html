@@ -226,7 +226,7 @@
     <!-- Key Result -->
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
-        <h2 class="title is-3">Key Result</h2>
+        <h2 class="title is-3">Key Results</h2>
       </div>
     </div>
 
@@ -235,8 +235,7 @@
       <div class="column is-four-fifths">
         <h2 class="subtitle has-text-centered">
           <img src="static/images/score.png"/>
-          <span class="dnerf">Puffin-Zero</span> is an open reasoning language model that demonstrates the potential of
-          large-scale RL training from pretrained checkpoints on solving competition-level math problems.
+          AIME performance and length dynamics of DAPO.
         </h2>
       </div>
     </div>
@@ -302,7 +301,7 @@
         <h2 class="title is-3">Algorithm Insights</h2>
         <div class="content has-text-justified">
           <p>
-            Before we can present a comprehensive technical report in the near future, we conclude several key points that we discovered during the training process.
+            We propose the Decoupled Clip and Dynamic SAmpling Policy Optimization (DAPO) algorithm, which includes several key techniques as below. Detailed analysis and insights can be found in our technical report.
           </p>
           <ul>
             <li>
@@ -314,28 +313,22 @@
           </p>
           <ul>
             <li>
-              Accuracy Filtering with Over-Sampling, which improves training efficiency and stability;
+              Dynamic Sampling, which improves training efficiency and stability;
             </li>
           </ul>
           <p>
-            During the training of GRPO, we find that the number of samples with accuracy equal to 1 increases continuously. To this end, we propose a strategy that over-samples and filters out groups with the accuracy equal to 1 and 0, leaving all prompts in the batch with effective gradients and keeping a consistent number of prompts.
+            We propose a strategy that performs dynamic sampling and filters out prompt groups with the accuracy equal to 1 and 0, keeping a consistent number of prompts with effective gradients across batches.
           </p>
           <ul>
             <li>
               Token-level Policy Gradient Loss, which is critical in long-CoT RL scenarios;
             </li>
           </ul>
-          <p>
-            The original GRPO algorithm employs a sample-level loss calculation, which involves first averaging the losses by token within each sample and then aggregating the losses across samples. In this approach, each sample is assigned an equal weight in the final loss computation. However, we find that this method of loss reduction performs badly in the context of long-CoT RL scenarios. We adopt a Token-level Policy Gradient Loss.
-          </p>
           <ul>
             <li>
               Overlong Reward Shaping, which reduces reward noise and stabilizes training.
             </li>
           </ul>
-          <p>
-            For overlong examples, we design a soft overlong punishment reward.
-          </p>
         </div>
       </div>
     </div>
