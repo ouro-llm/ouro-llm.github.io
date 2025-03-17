@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="description"
-        content="DAPO: An Open-Source State-of-The-Art LLM Reinforcement Learning System"> <!-- TODO: add some description, visible outside -->
+        content="DAPO: an Open-Source LLM Reinforcement Learning
+        System at Scale"> <!-- TODO: add some description, visible outside -->
   <meta name="keywords" content="DAPO, Deepseek-R1, PPO, GRPO, AIME, SIA-Lab, Tsinghua University, ByteDance AlphaSeed"> <!-- TODO: add some keywords for search engine -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DAPO</title>
@@ -80,7 +81,8 @@
       <div class="columns is-centered">
         <div class="column has-text-centered">
           <h1 class="title is-1 publication-title">
-            DAPO: An Open-Source State-of-The-Art LLM Reinforcement Learning System
+            DAPO: an Open-Source LLM Reinforcement Learning
+            System at Scale
           </h1> <!-- TODO: fix the title -->
           <!-- <div class="is-size-5 publication-authors">
             <span class="author-block">
@@ -111,7 +113,8 @@
                 <a href="./static/pdf/dapo_paper.pdf"
                    class="external-link button is-normal is-rounded is-dark"> <!-- TODO: fix pdf link -->
                   <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
+                      <!-- <i class="fas fa-file-pdf"></i> -->
+                      <i class="fa-solid fa-file-pdf" style="color: #ec4646;"></i>
                   </span>
                   <span>Paper</span>
                 </a>
@@ -151,7 +154,8 @@
                 <a href=""
                    class="external-link button is-normal is-rounded is-dark"> <!-- TODO: fix model link -->
                   <span class="icon">
-                    <i class="fa-solid fa-face-smiling-hands"></i>
+                    <!-- <i class="fa-solid fa-face-smiling-hands"></i> -->
+                    <i class="fa-solid fa-face-smiling-hands" style="color: #FFD43B;"></i>
                   </span>
                   <span>Model (Coming Soon)</span>
                   </a>
@@ -188,11 +192,20 @@
     <!-- Abstract -->
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
+        <h2 class="title is-3">Introducing DAPO</h2>
         <div class="content has-text-justified">
           <p>
-            We release a fully open-sourced system for large-scale LLM RL, including algorithm, code infrastructure, and dataset. The system achieves state-of-the-art large-scale LLM RL performance (AIME 50 on Qwen-32B pretrained model). We propose the Decoupled Clip and Dynamic SAmpling Policy Optimization (DAPO) algorithm. Through open-sourcing, we provide the broader research community and society with practical access to scalable reinforcement learning, enabling all to benefit from these advancements. Our system is based on the awesome <a href="https://github.com/volcengine/verl">verl</a> framework. Thanks for their great work!
+            We propose the Decoupled Clip and Dynamic SAmpling Policy Optimization (DAPO) algorithm. Through open-sourcing, we provide the broader research community and society with practical access to scalable reinforcement learning, enabling all to benefit from these advancements. Our system is based on the awesome <a href="https://github.com/volcengine/verl">verl</a> framework. Thanks for their great work!
+            Applying DAPO training to Qwen2.5-32B base model proves to outperform the previous state-of-the-art DeepSeek-R1-Zero-Qwen-32B on AIME24, achieving <span style="font-weight:900;">50%</span> accuracy with <span style="font-weight: 900;">50%</span> less training steps. 
           </p>
+        </div>
+        <div class="columns is-centered has-text-centered">
+          <div class="column is-four-fifths">
+            <h2 class="subtitle has-text-centered">
+              <img src="./static/images/score.png"/>
+            </h2>
+            AIME24 Performance
+          </div>
         </div>
       </div>
     </div>
@@ -200,47 +213,6 @@
   </div>
 </section>
 
-<section class="section">
-  <div class="container is-max-desktop">
-    <!-- Key Result -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Key Results</h2>
-        <div class="content has-text-justified">
-          <p>
-            We highlight the key results, focusing on the validation performance and training dynamics during DAPO training.
-          </p>
-          <p>
-            Applying DAPO training to Qwen2.5-32B base model proves to outperform the previous state-of-the-art DeepSeek-R1-Zero-Qwen-32B on AIME24, with 50% less training steps. 
-          </p>
-          <p>
-            In reinforcement learning for reasoning models, key metrics include response length, reward, entropy, and mean probability. Response length allows for complex reasoning but may fluctuate during training. Reward increases steadily but may not correlate with validation accuracy. Entropy measures exploration, and it is crucial to maintain a balanced level: too low limits exploration, too high causes randomness. Techniques like Clip-Higher prevents entropy collapse, and gradual entropy growth boosts performance. Mean probability indicates token sampling behavior, helping to balance exploration and exploitation.
-          </p>
-          </div>
-      </div>
-    </div>
-
-    <!-- Score -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="subtitle has-text-centered">
-          <img src="./static/images/score.png"/>
-        </h2>
-        AIME24 Performance
-      </div>
-    </div>
-
-    <!-- Length -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="subtitle has-text-centered">
-          <img src="./static/images/dynamics.png" />
-        </h2>
-        Training Dynamics
-      </div>
-    </div>
-  </div>
-</section>
 
 <section class="section">
   <div class="container is-max-desktop">
@@ -250,12 +222,12 @@
         <h2 class="title is-3">Fully Open-Source</h2>
         <div class="content has-text-justified">
           <p>
-            To benefit the broader research community, we make fully open-source the recipe of our RL training, including algorithm details, datasets, verifier, model weights and infrastructures. We hope our project could help the research community to unlock the secret of large-scale RL training much easier. We'll provide a detailed technical report soon.
+            To benefit the broader research community, we make fully open-source the recipe of our RL training, including algorithm details, datasets, verifier, model weights. We utilize <a href="https://github.com/volcengine/verl">verl</a> to perform DAPO training using the Qwen-32B-Base model from scratch with 128 H20 GPUs.
           </p>
-          <h3 class="title is-4">Infrastructure</h3>
+          <!-- <h3 class="title is-4">Infrastructure</h3>
           <p>
             We utilize <a href="https://github.com/volcengine/verl">verl</a> to perform DAPO training using the Qwen-32B-Base model from scratch with 128 H20 GPUs.
-          </p>
+          </p> -->
           <h3 class="title is-4">Datasets</h3>
           <p>
             We provide training and validation datasets for DAPO training.
@@ -268,17 +240,13 @@
               </li>
             </ul>
           </p>
-          <h3 class="title is-4">Verifiers</h3>
+          <h3 class="title is-4">Verifier</h3>
           <p>
             We adopt a simple but robust <a href="https://github.com/volcengine/verl/blob/gm-tyx/puffin/main/verl/utils/reward_score/math_dapo.py">rule-based verifier</a> relying on string normalization and matching.
           </p>
-          <h3 class="title is-4">Training Scripts</h3>
+          <h3 class="title is-4">Training Script</h3>
           <p>
             We provide <a href="https://github.com/volcengine/verl/blob/gm-tyx/puffin/main/recipe/dapo/run_dapo_qwen2.5_32b.sh">the out-of-the-box script</a> for DAPO training reproduction.
-          </p>
-          <h3 class="title is-4">Model Weights</h3>
-          <p>
-            Coming Soon (training still in progress). Currently, the best evaluation accuracy for AIME24 is 50%.
           </p>
         </div>
       </div>
@@ -298,28 +266,22 @@
           </p>
           <ul>
             <li>
-              Clip-Higher, which promotes the diversity of the system and avoids entropy collapse;
-            </li>
-          </ul>
-          <p>
-            We observe an entropy-collapsing phenomenon in our initial experiments. We propose increasing the upper clip range of the importance sampling ratio in policy gradient loss to mitigate this problem.
-          </p>
-          <ul>
-            <li>
-              Dynamic Sampling, which improves training efficiency and stability;
-            </li>
-          </ul>
-          <p>
-            We propose a strategy that performs dynamic sampling and filters out prompt groups with the accuracy equal to 1 and 0, keeping a consistent number of prompts with effective gradients across batches.
-          </p>
-          <ul>
-            <li>
-              Token-level Policy Gradient Loss, which is critical in long-CoT RL scenarios;
+              <b>Clip-Higher</b>, which promotes the diversity of the system and avoids entropy collapse. We observe an entropy-collapsing phenomenon in our initial experiments. We propose increasing the upper clip range of the importance sampling ratio in policy gradient loss to mitigate this problem.
             </li>
           </ul>
           <ul>
             <li>
-              Overlong Reward Shaping, which reduces reward noise and stabilizes training.
+              <b>Dynamic Sampling</b>, which improves training efficiency and stability. We propose a strategy that performs dynamic sampling and filters out prompt groups with the accuracy equal to 1 and 0, keeping a consistent number of prompts with effective gradients across batches.
+            </li>
+          </ul>
+          <ul>
+            <li>
+              <b>Token-level Policy Gradient Loss</b>, which is critical in long-CoT RL scenarios.
+            </li>
+          </ul>
+          <ul>
+            <li>
+              <b>Overlong Reward Shaping</b>, which reduces reward noise and stabilizes training.
             </li>
           </ul>
         </div>
@@ -328,44 +290,8 @@
   </div>
 </section>
 
-<section class="section">
+<!-- <section class="section">
   <div class="container is-max-desktop">
-    <!-- Datasets -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Dataset</h2>
-        <div class="content has-text-justified">
-          <p>
-            The answers of math dataset typically come in a variety of formats, such as expression, formula and number, which makes it challenging to design comprehensive rules to parse them. To provide accurate reward signals using rules and minimize errors introduced by formula parsers, inspired by AIME, we select and transform the answers into integers, which are easy to parse. For example, if the original answer is expressed in the form of \( \frac{a + \sqrt{b}}{c} \), we instruct the LLM to modify the question so that the expected answer becomes \( a + b + c \). After selection and transformation, we obtained the DAPO-Math-17k dataset, which consists of 17k prompts, each paired with an integer as the answer.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <!-- Experiment Setting -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Experiment Setting</h2>
-        <div class="content has-text-justified">
-          <p>
-            We utilize our training data to perform DAPO training on Qwen2.5-32B-Base without any cold start (i.e., supervised finetune). The model is trained on 16 H20 machines (128 H20 GPUs in total). Each machine is equipped with 8 NVIDIA H20-96GB GPUs inter-connected with 960 GB/s NVLink. The inter-machine bandwidth is 1200Gbps. We adopt <a href="https://github.com/volcengine/verl">verl</a> as the training framework. Our open-sourced experiments were conducted on the Volcano Engine Machine Learning Platform (<a href="https://console.volcengine.com/ml-platform">console</a>, 
-    <a href="https://www.volcengine.com/docs/6459/">documentation</a>). 
-    We will provide a full reproduction guideline on the Volcano Engine platform 
-    to help users replicate our experiments.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <!-- Contributions -->
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
         <h2 class="title is-3">Contributions</h2>
@@ -377,7 +303,7 @@
       </div>
     </div>
   </div>
-</section>
+</section> -->
 
 <!-- <section class="section">
   <div class="container is-max-desktop">
@@ -393,26 +319,26 @@
 </section> -->
 
 
-<section class="section" id="BibTeX">
+<!-- <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
-    <h2 class="title">BibTeX</h2> <!-- TODO -->
+    <h2 class="title">BibTeX</h2>
     <pre><code>@article{2025puffinzero,
-  author    = {Author 1, Author 2, Author 3},
-  title     = {Puffin-Zero},
-  journal   = {Arxiv},
-  year      = {2025},
-}</code></pre>
+                author    = {Author 1, Author 2, Author 3},
+                title     = {Puffin-Zero},
+                journal   = {Arxiv},
+                year      = {2025},
+              }</code></pre>
   </div>
-</section>
+</section> -->
 
 
 <footer class="footer">
   <div class="container">
     <div class="content has-text-centered">
-      <a class="icon-link"
-         href="./static/pdf/dapo_paper.pdf"> <!-- TODO: fix pdf link -->
-        <i class="fas fa-file-pdf"></i>
-      </a>
+      <!-- <a class="icon-link"
+         href="./static/pdf/dapo_paper.pdf">
+        <i class="fa-solid fa-file-pdf" style="color: #ec4646;"></i>
+      </a> -->
       <!-- <a class="icon-link" href="" class="external-link" disabled>
         <i class="fab fa-github"></i>
       </a> -->
