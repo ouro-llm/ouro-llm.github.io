@@ -208,7 +208,13 @@
         <h2 class="title is-3">Key Results</h2>
         <div class="content has-text-justified">
           <p>
-            We present as key results the validation performance and training dynamics in DAPO training. Applying DAPO training to Qwen2.5-32B base model proves to outperform the previous state-of-the-art DeepSeek-R1-Zero-Qwen-32B on AIME24, with 50% less training steps. [Add some description of dynamics]
+            We highlight the key results, focusing on the validation performance and training dynamics during DAPO training.
+          </p>
+          <p>
+            Applying DAPO training to Qwen2.5-32B base model proves to outperform the previous state-of-the-art DeepSeek-R1-Zero-Qwen-32B on AIME24, with 50% less training steps. 
+          </p>
+          <p>
+            In reinforcement learning for reasoning models, key metrics include response length, reward, entropy, and mean probability. Response length allows for complex reasoning but may fluctuate during training. Reward increases steadily but may not correlate with validation accuracy. Entropy measures exploration, and it is crucial to maintain a balanced level: too low limits exploration, too high causes randomness. Techniques like Clip-Higher prevents entropy collapse, and gradual entropy growth boosts performance. Mean probability indicates token sampling behavior, helping to balance exploration and exploitation.
           </p>
           </div>
       </div>
