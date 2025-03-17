@@ -244,7 +244,7 @@
         <h2 class="title is-3">Fully Open-Source</h2>
         <div class="content has-text-justified">
           <p>
-            To benefit the broader research community, we make fully open-source the recipe of our RL training, including algorithm details, dataset, verifiers, model weights and infrastructures. We hope our project could help the research community to unlock the secret of large-scale RL training much easier. We'll provide a detailed technical report soon.
+            To benefit the broader research community, we make fully open-source the recipe of our RL training, including algorithm details, datasets, verifier, model weights and infrastructures. We hope our project could help the research community to unlock the secret of large-scale RL training much easier. We'll provide a detailed technical report soon.
           </p>
           <h3 class="title is-4">Infrastructure</h3>
           <p>
@@ -252,27 +252,27 @@
           </p>
           <h3 class="title is-4">Datasets</h3>
           <p>
-            We provide training and evaluation datasets for DAPO training.
+            We provide training and validation datasets for DAPO training.
             <ul>
               <li>
-                Evaluation Dataset: AIME24 dataset.
+                Training: <a href="https://huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k">DAPO-Math-17k</a>, an elaborately curated math dataset. 
               </li>
               <li>
-                Training Dataset: A meticulously processed math dataset. 
+                Validation: <a href="https://huggingface.co/datasets/BytedTsinghua-SIA/AIME-2024">AIME 2024</a> dataset.
               </li>
             </ul>
           </p>
           <h3 class="title is-4">Verifiers</h3>
           <p>
-            Verifiers: [Rule-based Verifier](link).
+            We adopt a simple but robust <a href="https://github.com/volcengine/verl/blob/gm-tyx/puffin/main/verl/utils/reward_score/math_dapo.py">rule-based verifier</a> relying on string normalization and matching.
           </p>
           <h3 class="title is-4">Training Scripts</h3>
           <p>
-            Elaborate hyper-parameters for reproduction.
+            We provide <a href="https://github.com/volcengine/verl/blob/gm-tyx/puffin/main/recipe/dapo/run_dapo_qwen2.5_32b.sh">the out-of-the-box script</a> for DAPO training reproduction.
           </p>
           <h3 class="title is-4">Model Weights</h3>
           <p>
-            Coming Soon (training still in progress). Currently, the best evaluation accuracy for AIME24 is 45.4%.
+            Coming Soon (training still in progress). Currently, the best evaluation accuracy for AIME24 is 50%.
           </p>
         </div>
       </div>
