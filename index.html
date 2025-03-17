@@ -3,12 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="description"
-        content="Democratizing LLM Reasoning
-        by Unveiling the Secrets of RL Scaling"> <!-- TODO: add some description, visible outside -->
-  <meta name="keywords" content="Puffin-Zero, Deepseek-R1, GRPO, AIME, SIA-Lab, Tsinghua University, ByteDance AlphaSeed"> <!-- TODO: add some keywords for search engine -->
+        content="DAPO: An Open-Source State-of-The-Art LLM Reinforcement Learning System"> <!-- TODO: add some description, visible outside -->
+  <meta name="keywords" content="DAPO, Deepseek-R1, PPO, GRPO, AIME, SIA-Lab, Tsinghua University, ByteDance AlphaSeed"> <!-- TODO: add some keywords for search engine -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="google-site-verification" content="kprAnuq7DikheNqF213Uz7EMDHcgE-ivGPsTVfGzAsI" />
-  <title>Puffin-Zero</title> <!-- TODO: fix the title displayed on top -->
+  <title>DAPO</title>
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
@@ -24,15 +23,6 @@
     gtag('config', 'G-PYVRSFMDRL');
   </script>
   <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-  <!-- <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-  <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [['$','$'], ['\\(','\\)']],
-            processEscapes: true
-        }
-      });
-  </script> -->
 
   <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
         rel="stylesheet">
@@ -44,7 +34,6 @@
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
-  <link rel="icon" type="images/x-icon" href="./static/images/icon_3.png"> <!-- TODO: fix icon -->
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script defer src="./static/js/fontawesome_6_7_2.all.js"></script>
@@ -92,9 +81,7 @@
       <div class="columns is-centered">
         <div class="column has-text-centered">
           <h1 class="title is-1 publication-title">
-            <img src="static/images/icon_3.png" style="width:1.25em;vertical-align: middle" alt="Logo" />
-            <span class="dnerf">Puffin-Zero</span>: Democratizing LLM Reasoning
-            by Unveiling the Secrets of RL Scaling
+            DAPO: An Open-Source State-of-The-Art LLM Reinforcement Learning System
           </h1> <!-- TODO: fix the title -->
           <!-- <div class="is-size-5 publication-authors">
             <span class="author-block">
@@ -107,11 +94,12 @@
           </div> -->
 
           <div class="is-size-5 publication-authors">
-            <span class="author-block"><sup>1</sup>ByteDance Seed,</span>
+            <span class="author-block"><sup>1</sup>ByteDance Seed</span>
             <span class="author-block"><sup>2</sup>Institute for AI Industry Research (AIR), Tsinghua University</span>
-            <span class="author-block"><sup>3</sup>Tsinghua-ByteDance SIA-Lab</span>
+            <span class="author-block"><sup>3</sup>SIA-Lab of Tsinghua AIR and ByteDance Seed</span>
+            <span class="author-block"><sup>4</sup>The University of Hong Kong</span>
           </div>
-          <div class="is-size-5 publication-authors">
+          <div class="is-size-6 publication-authors">
             <span class="author-block">*Full author list in Contributions</span>
           </div>
 
@@ -202,7 +190,7 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            We release a fully open-sourced system for large-scale LLM RL, including algorithm, code infrastructure, and dataset. The system achieves state-of-the-art large-scale LLM RL performance (AIME 50 on Qwen-32B pretrained model). We propose the Decoupled Clip and Dynamic SAmpling Policy Optimization (DAPO) algorithm. Through open-sourcing, we provide the broader research community and society with practical access to scalable reinforcement learning, enabling all to benefit from these advancements. Our system is based on the awesome VeRL framework. Thanks for their great work!
+            We release a fully open-sourced system for large-scale LLM RL, including algorithm, code infrastructure, and dataset. The system achieves state-of-the-art large-scale LLM RL performance (AIME 50 on Qwen-32B pretrained model). We propose the Decoupled Clip and Dynamic SAmpling Policy Optimization (DAPO) algorithm. Through open-sourcing, we provide the broader research community and society with practical access to scalable reinforcement learning, enabling all to benefit from these advancements. Our system is based on the awesome <a href="https://github.com/volcengine/verl">verl</a> framework. Thanks for their great work!
           </p>
         </div>
       </div>
@@ -225,8 +213,8 @@
       <div class="column is-four-fifths">
         <h2 class="subtitle has-text-centered">
           <img src="static/images/score.png"/>
-          AIME performance and length dynamics of DAPO.
         </h2>
+        AIME24 Performance: DAPO on the Qwen2.5-32B base model outperforms the previous SoTA DeepSeek-R1-Zero-Qwen-32B with 50% training steps.
       </div>
     </div>
 
@@ -234,9 +222,9 @@
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
         <h2 class="subtitle has-text-centered">
-          <img src="static/images/length.png"/>
-          Some caption.
+          <img src="static/images/length.png" width="400"/>
         </h2>
+        Length Dynamics: The increase in length provides the model with a larger space for exploration, allowing more complex reasoning behaviors to be sampled and reinforced.
       </div>
     </div>
   </div>
@@ -252,31 +240,34 @@
           <p>
             To benefit the broader research community, we make fully open-source the recipe of our RL training, including algorithm details, dataset, verifiers, model weights and infrastructures. We hope our project could help the research community to unlock the secret of large-scale RL training much easier. We'll provide a detailed technical report soon.
           </p>
-          <ul>
-            <li>
-              Infrastructure: We utilize <a href="https://github.com/volcengine/verl">verl</a> to perform GRPO training using the Qwen-32B-Base model from scratch with 128 H20 GPUs.
-            </li>
-            <li>
-              Data: We provide training and evaluation datasets for <span class="dnerf">Puffin-Zero</span> training.
-              <ul>
-                <li>
-                  Evaluation Dataset: AIME24 dataset.
-                </li>
-                <li>
-                  Training Dataset: A meticulously processed math dataset. 
-                </li>
-              </ul>
-            </li>
-            <li>
-              Verifiers: [Rule-based Verifier](link).
-            </li>
-            <li>
-              Training Scripts: Elaborate hyper-parameters for reproduction.
-            </li>
-            <li>
-              Model weights: Coming Soon (training still in progress). Currently, the best evaluation accuracy for AIME24 is 45.4%.
-            </li>
-          </ul>
+          <h3 class="title is-4">Infrastructure</h3>
+          <p>
+            We utilize <a href="https://github.com/volcengine/verl">verl</a> to perform DAPO training using the Qwen-32B-Base model from scratch with 128 H20 GPUs.
+          </p>
+          <h3 class="title is-4">Datasets</h3>
+          <p>
+            We provide training and evaluation datasets for DAPO training.
+            <ul>
+              <li>
+                Evaluation Dataset: AIME24 dataset.
+              </li>
+              <li>
+                Training Dataset: A meticulously processed math dataset. 
+              </li>
+            </ul>
+          </p>
+          <h3 class="title is-4">Verifiers</h3>
+          <p>
+            Verifiers: [Rule-based Verifier](link).
+          </p>
+          <h3 class="title is-4">Training Scripts</h3>
+          <p>
+            Elaborate hyper-parameters for reproduction.
+          </p>
+          <h3 class="title is-4">Model Weights</h3>
+          <p>
+            Coming Soon (training still in progress). Currently, the best evaluation accuracy for AIME24 is 45.4%.
+          </p>
         </div>
       </div>
     </div>
@@ -330,7 +321,7 @@
     <!-- Datasets -->
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
-        <h2 class="title is-3">Datasets</h2>
+        <h2 class="title is-3">Dataset</h2>
         <div class="content has-text-justified">
           <p>
             The answers of math dataset typically come in a variety of formats, such as expression, formula and number, which makes it challenging to design comprehensive rules to parse them. To provide accurate reward signals using rules and minimize errors introduced by formula parsers, inspired by AIME, we select and transform the answers into integers, which are easy to parse. For example, if the original answer is expressed in the form of \( \frac{a + \sqrt{b}}{c} \), we instruct the LLM to modify the question so that the expected answer becomes \( a + b + c \). After selection and transformation, we obtained the DAPO-Math-17K dataset, which consists of 17K prompts, each paired with an integer as the answer.
@@ -349,7 +340,7 @@
         <h2 class="title is-3">Experiment Setting</h2>
         <div class="content has-text-justified">
           <p>
-            We utilize our training data to perform GRPO training on Qwen2.5-32B-Base without any cold start (i.e., supervised finetune). The model is trained on 16 H20 machines (128 H20 GPUs in total). Each machine is equipped with 8 NVIDIA H20-96GB GPUs inter-connected with xxx GB/s NVLink. The inter-machine bandwidth is xxGbps. Up till now (03/15/2025), the model has been trained for xxx GPU hours. We use <a href="https://github.com/volcengine/verl">verl</a> to perform training.
+            We utilize our training data to perform DAPO training on Qwen2.5-32B-Base without any cold start (i.e., supervised finetune). The model is trained on 16 H20 machines (128 H20 GPUs in total). Each machine is equipped with 8 NVIDIA H20-96GB GPUs inter-connected with 960 GB/s NVLink. The inter-machine bandwidth is 1200Gbps. We adopt <a href="https://github.com/volcengine/verl">verl</a> as the training framework
           </p>
         </div>
       </div>
