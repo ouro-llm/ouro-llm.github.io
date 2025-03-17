@@ -1,5 +1,4 @@
-# Puffin-Zero
-
+# DAPO: An Open-Source State-of-The-Art LLM Reinforcement Learning System
 This website is adapted from <a href="https://nerfies.github.io/">Nerfies</a>.
 
 # Website License
