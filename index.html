@@ -3,11 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="description"
-        content="DAPO: an Open-Source LLM Reinforcement Learning
-        System at Scale"> <!-- TODO: add some description, visible outside -->
-  <meta name="keywords" content="DAPO, Deepseek-R1, PPO, GRPO, AIME, SIA-Lab, Tsinghua University, ByteDance AlphaSeed"> <!-- TODO: add some keywords for search engine -->
+        content="Ouro: Scaling Latent Reasoning via Looped Language Models">
+  <meta name="keywords" content="Ouro, Looped Language Models, LoopLM, Latent Reasoning, Parameter Efficiency, Recursive Computation, ByteDance Seed, UC Santa Cruz">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DAPO</title>
+  <title>Ouro: Looped Language Models</title>
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
@@ -81,9 +80,8 @@
       <div class="columns is-centered">
         <div class="column has-text-centered">
           <h1 class="title is-1 publication-title">
-            DAPO: an Open-Source LLM Reinforcement Learning
-            System at Scale
-          </h1> <!-- TODO: fix the title -->
+            Scaling Latent Reasoning via Looped Language Models
+          </h1>
           <!-- <div class="is-size-5 publication-authors">
             <span class="author-block">
               <a href="">Author 1</a><sup>1,2,3</sup>,</span>
@@ -97,26 +95,30 @@
           <div class="is-size-5 publication-authors">
             <span class="author-block"><sup>1</sup>ByteDance Seed</span>
             &nbsp;
-            <span class="author-block"><sup>2</sup>Institute for AI Industry Research (AIR), Tsinghua University</span>
-            <span class="author-block"><sup>3</sup>The University of Hong Kong</span>
+            <span class="author-block"><sup>2</sup>UC Santa Cruz</span>
+            &nbsp;
+            <span class="author-block"><sup>3</sup>Princeton University</span>
             <br>
-            <span class="author-block"><sup>4</sup>SIA-Lab of Tsinghua AIR and ByteDance Seed</span>
+            <span class="author-block"><sup>4</sup>Mila - Quebec AI Institute</span>
+            &nbsp;
+            <span class="author-block"><sup>5</sup>University of Montreal</span>
+            &nbsp;
+            <span class="author-block"><sup>6</sup>Peking University</span>
           </div>
           <div class="is-size-6 publication-authors">
-            <span class="author-block">*Full author list in Contributions</span>
+            <span class="author-block">*Full author list in paper</span>
           </div>
 
           <div class="column has-text-centered">
             <div class="publication-links">
               <!-- PDF Link. -->
               <span class="link-block">
-                <a href="https://arxiv.org/pdf/2503.14476"
-                   class="external-link button is-normal is-rounded is-dark"> <!-- TODO: fix pdf link -->
+                <a href="#"
+                   class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
-                      <!-- <i class="fas fa-file-pdf"></i> -->
                       <i class="fa-solid fa-file-pdf" style="color: #ec4646;"></i>
                   </span>
-                  <span>Paper</span>
+                  <span>Paper (Coming Soon)</span>
                 </a>
               </span>
               <!-- Arxiv Link. -->
@@ -131,33 +133,22 @@
               </span> -->
               <!-- Code Link. -->
               <span class="link-block">
-                <a href="https://github.com/BytedTsinghua-SIA/DAPO"
-                   class="external-link button is-normal is-rounded is-dark"> <!-- TODO: fix repo link -->
+                <a href="#"
+                   class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fab fa-github"></i>
                   </span>
-                  <span>Code</span>
-                  </a>
-              </span>
-              <!-- Dataset Link. -->
-              <span class="link-block">
-                <a href="https://huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k"
-                   class="external-link button is-normal is-rounded is-dark"> <!-- TODO: fix dataset link -->
-                  <span class="icon">
-                      <i class="fa-regular fa-database"></i>
-                  </span>
-                  <span>Data</span>
+                  <span>Code (Coming Soon)</span>
                   </a>
               </span>
               <!-- Model Link. -->
               <span class="link-block">
-                <a href="https://huggingface.co/BytedTsinghua-SIA/DAPO-Qwen-32B"
-                   class="external-link button is-normal is-rounded is-dark"> <!-- TODO: fix model link -->
+                <a href="#"
+                   class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
-                    <!-- <i class="fa-solid fa-face-smiling-hands"></i> -->
                     <i class="fa-solid fa-face-smiling-hands" style="color: #FFD43B;"></i>
                   </span>
-                  <span>Model</span>
+                  <span>Models (Coming Soon)</span>
                   </a>
               </span>
             </div>
@@ -192,11 +183,13 @@
     <!-- Abstract -->
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
-        <h2 class="title is-3">Introducing DAPO</h2>
+        <h2 class="title is-3">Introducing Ouro</h2>
         <div class="content has-text-justified">
           <p>
-            We propose the <b>D</b>ecoupled Clip and <b>D</b>ynamic s<b>A</b>mpling <b>P</b>olicy <b>O</b>ptimization (DAPO) algorithm. By making our work publicly available, we provide the broader research community and society with practical access to scalable reinforcement learning, enabling all to benefit from these advancements. Our system is based on the awesome <a href="https://github.com/volcengine/verl">verl</a> framework. Thanks for their great work!
-            Applying DAPO training to Qwen2.5-32B base model proves to outperform the previous state-of-the-art DeepSeek-R1-Zero-Qwen-32B on AIME 2024, achieving <span style="font-weight:900;">50%</span> accuracy with <span style="font-weight: 900;">50%</span> less training steps. 
+            Modern LLMs are trained to 'think' primarily via explicit text generation, such as chain-of-thought, which defers reasoning to post-training and under-leverages pre-training data. We present <b>Ouro</b>, named after the recursive Ouroboros, a family of pre-trained <b>Looped Language Models</b> that instead build reasoning into the pre-training phase through (i) <b>iterative computation in latent space</b>, (ii) an <b>entropy-regularized objective</b> for learned depth allocation, and (iii) scaling to <span style="font-weight:900;">7.7T tokens</span>. 
+          </p>
+          <p>
+            Through controlled experiments, we show this advantage stems not from increased knowledge storage, but from <b>superior knowledge manipulation capabilities</b>. We also show our latent reasoning is more faithful to the reasoning process than standard LLMs. Our resulting <b>1.4B and 2.6B models</b> match the performance of up to <b>12B SOTA standard LLMs</b> across a wide range of benchmarks, showing its potential as a scaling direction in a data-constrained era.
           </p>
         </div>
       </div>
@@ -204,9 +197,9 @@
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
         <h2 class="subtitle has-text-centered">
-          <img src="./static/images/score.png"/>
+          <img src="./static/images/ouro_main.png"/>
         </h2>
-        AIME 2024 Performance
+        Ouro Looped Language Model Architecture and Performance
       </div>
     </div>
   </div>
@@ -215,35 +208,31 @@
 
 <section class="section">
   <div class="container is-max-desktop">
-    <!-- Fully Open-Source -->
+    <!-- Key Features -->
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
-        <h2 class="title is-3">Fully Open-Source</h2>
+        <h2 class="title is-3">Key Features</h2>
         <div class="content has-text-justified">
+          <h3 class="title is-4">🔄 Looped Architecture</h3>
           <p>
-            To benefit the broader research community, we fully open-source the recipe of our RL training, including algorithm details, dataset, verifiers, model weights and infrastructures. We utilize <a href="https://github.com/volcengine/verl">verl</a> to perform DAPO training using the Qwen-32B-Base model from scratch with 128 H20 GPUs. Our open-source experiments were conducted on the Volcano Engine Machine Learning Platform. 
-            We will provide a full reproduction guideline on the Volcano Engine platform 
-            to help users replicate our experiments.
+            Ouro uses a parameter-shared looped architecture where the same transformer blocks are applied recurrently. This allows the model to perform iterative computation in latent space, enabling deeper reasoning without proportionally increasing parameter count. Our models use 4 recurrent steps (R4) to achieve exceptional parameter efficiency.
           </p>
-          <h3 class="title is-4">Datasets</h3>
+          <h3 class="title is-4">🎯 Exceptional Parameter Efficiency</h3>
           <p>
-            We provide training and validation datasets for DAPO training.
+            Through 7.7T token pre-training, our models demonstrate remarkable parameter efficiency:
             <ul>
-              <li>
-                Training: <a href="https://huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k">DAPO-Math-17k</a>, an elaborately curated math dataset. 
-              </li>
-              <li>
-                Validation: <a href="https://huggingface.co/datasets/BytedTsinghua-SIA/AIME-2024">AIME 2024</a> dataset.
-              </li>
+              <li><b>Ouro-1.4B</b>: Matches the performance of 4B standard transformer models</li>
+              <li><b>Ouro-2.6B</b>: Rivals 8B standard transformer models</li>
+              <li>Achieves 2-3× parameter efficiency improvements across diverse benchmarks</li>
             </ul>
           </p>
-          <h3 class="title is-4">Verifier</h3>
+          <h3 class="title is-4">🧠 Superior Knowledge Manipulation</h3>
           <p>
-            We adopt a simple but robust <a href="https://github.com/volcengine/verl/blob/gm-tyx/puffin/main/verl/utils/reward_score/math_dapo.py">rule-based verifier</a> relying on string normalization and matching.
+            Through controlled experiments on synthetic tasks, we demonstrate that the looped architecture's advantage stems not from increased knowledge storage, but from superior knowledge manipulation capabilities on tasks requiring fact composition and multi-hop reasoning.
           </p>
-          <h3 class="title is-4">Training Script</h3>
+          <h3 class="title is-4">📊 Entropy-Regularized Adaptive Computation</h3>
           <p>
-            We provide <a href="https://github.com/volcengine/verl/blob/gm-tyx/puffin/main/recipe/dapo/run_dapo_qwen2.5_32b.sh">the out-of-the-box script</a> for DAPO training reproduction.
+            We develop a novel training objective with entropy regularization that enables dynamic depth allocation. Simple inputs can exit after fewer recurrent steps, while complex problems automatically allocate more iterations, matching computational depth to input difficulty.
           </p>
         </div>
       </div>
@@ -253,34 +242,43 @@
 
 <section class="section">
   <div class="container is-max-desktop">
-    <!-- Algorithm Insights -->
+    <!-- Training Pipeline -->
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
-        <h2 class="title is-3">Algorithm Insights</h2>
+        <h2 class="title is-3">Training Pipeline</h2>
         <div class="content has-text-justified">
           <p>
-            We propose the <b>D</b>ecoupled Clip and <b>D</b>ynamic s<b>A</b>mpling <b>P</b>olicy <b>O</b>ptimization (DAPO) algorithm, which includes several key techniques as below. Detailed analysis and insights can be found in our technical report.
+            Our training pipeline is a carefully designed multi-stage process totaling <b>7.7T tokens</b> of training data:
           </p>
-          <ul>
+          <ol>
             <li>
-              <b>Clip-Higher</b>, which promotes the diversity of the system and avoids entropy collapse. We observe an entropy-collapsing phenomenon in our initial experiments. We propose increasing the upper clip range of the importance sampling ratio in policy gradient loss to mitigate this problem.
+              <b>Warmup</b>: Initial model warmup phase
             </li>
-          </ul>
-          <ul>
             <li>
-              <b>Dynamic Sampling</b>, which improves training efficiency and stability. We propose a strategy that performs dynamic sampling and filters out prompt groups with the accuracy equal to 1 and 0, keeping a consistent number of prompts with effective gradients across batches.
+              <b>Stable Training Phase 1</b>: 3T tokens on standard pre-training data
             </li>
-          </ul>
-          <ul>
             <li>
-              <b>Token-level Policy Gradient Loss</b>, which is critical in long-CoT RL scenarios.
+              <b>Model Branching</b>: Creating 1.4B and 2.6B variants (via upcycling)
             </li>
-          </ul>
-          <ul>
             <li>
-              <b>Overlong Reward Shaping</b>, which reduces reward noise and stabilizes training.
+              <b>Stable Training Phase 2</b>: Additional 3T tokens for both model sizes
             </li>
-          </ul>
+            <li>
+              <b>CT Annealing</b>: 1.4T tokens with chain-of-thought annealing
+            </li>
+            <li>
+              <b>LongCT</b>: 20B tokens of long-context chain-of-thought training
+            </li>
+            <li>
+              <b>Mid-Training</b>: 300B tokens of targeted mid-training
+            </li>
+            <li>
+              <b>Reasoning SFT</b>: Supervised fine-tuning for reasoning-focused models (Ouro-Thinking variants)
+            </li>
+          </ol>
+          <p>
+            The architecture uses standard decoder-only Transformer with <b>Rotary Position Embeddings (RoPE)</b>, <b>SwiGLU activation</b>, and <b>sandwich normalization</b> for enhanced training stability with deep recurrent computation.
+          </p>
         </div>
       </div>
     </div>

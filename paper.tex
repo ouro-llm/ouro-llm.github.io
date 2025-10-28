@@ -1,0 +1,1634 @@
+\documentclass[]{bytedance_seed}
+
+% single-column: \documentclass[]{bytedance_seed}, 
+%Please prioritize using single-column。
+
+% twocolumn: \documentclass[twocolumn]{bytedance_seed}
+
+\usepackage[toc,page,header]{appendix}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{minitoc}
+
+
+\usepackage[utf8]{inputenc}  % allow utf-8 input
+\usepackage[T1]{fontenc}     % use 8-bit T1 fonts
+\usepackage{hyperref}        % hyperlinks
+\usepackage{url}             % simple URL typesetting 
+\usepackage{booktabs}        % professional-quality tables
+\usepackage{amsfonts}        % blackboard math symbols
+\usepackage{nicefrac}        % compact symbols for 1/2, etc.
+\usepackage{microtype}       % microtypography
+\usepackage{xcolor}          % colors
+\usepackage{amsmath}         % math equations
+\usepackage{amsthm}
+\usepackage{amssymb}         % 额外的数学符号
+\usepackage{colortbl}        % 表格着色 (\rowcolor)
+\usepackage{graphicx}        % 图形支持
+% \usepackage{subfigure}       % 子图支持 (或使用 subcaption) \boyi{I disabled subfigure since it has already been defined in the style package}
+\usepackage{cleveref}        % 智能引用 (\Cref{})
+\usepackage{multirow}        % 表格中的多行合并（如果需要）
+\usepackage{array}           % 增强的表格功能（可选）
+\usepackage{float}           % 浮动体控制（可选）
+\usepackage{enumitem}        % 控制item的格式
+\usepackage{subcaption}
+\usepackage{wrapfig}
+\let\P\relax\DeclareMathOperator{\P}{\mathbb{P}}
+\DeclareMathOperator{\E}{\mathbb{E}}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\stimes}{\widetilde\otimes}
+\DeclareMathOperator{\htheta}{\hat\theta}
+
+\newcommand{\bs}{\boldsymbol}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\1}{\mathbf{1}}
+\newcommand{\set}{\qty}
+\DeclareMathOperator{\dist}{dist}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\sgn}{sign}
+\DeclareMathOperator{\spn}{span}
+\DeclareMathOperator{\unif}{Unif}
+\DeclareMathOperator{\poly}{poly}
+\DeclareMathOperator{\relu}{ReLU}
+\DeclareMathOperator{\mat}{Mat}
+\let\vec\relax\DeclareMathOperator{\vec}{Vec}
+\DeclareMathOperator{\sym}{Sym}
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{assumption}{Assumption}
+\newtheorem{conjecture}{Conjecture}
+\newtheorem{definition}{Definition}
+% \newtheorem{task}[theorem]{Task}
+\newtheorem{task}{Task}
+% \newtheorem{construction}[theorem]{Construction}
+\newtheorem{construction}{Construction}
+% \theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+
+
+\definecolor{lightergray}{gray}{0.9} 
+\newcommand{\ut}{LoopLM}
+\newcommand{\zixuan}[1]{\textcolor{teal}{[ZW: #1]}}
+\newcommand{\ridger}[1]{\textcolor{blue}{[RJ: #1]}}
+\newcommand{\tz}[1]{\textcolor{green}{[TZ: #1]}}
+\newcommand{\huakai}[1]{\textcolor{orange}{[KH: #1]}}
+\newcommand{\xinyu}[1]{\textcolor{red}{[XY: #1]}}
+
+\newcommand{\boyi}[1]{\textcolor{cyan}{[BW: #1]}}
+\title{Scaling Latent Reasoning via Looped Language Models}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%
+
+% Project Lead (Equal Contribution)
+\author[1,2]{Rui-Jie Zhu*}
+\author[1,3]{Zixuan Wang*}
+\author[1]{Kai Hua*}
+\author[4,5]{Tianyu Zhang*}
+\author[1]{Ziniu Li*}
+\author[1,6]{Haoran Que*}
+\author[3]{Boyi Wei*}
+\author[1]{Fan Yin*}
+\author[1,7]{Zixin Wen*}
+\author[6]{He Xing*}
+
+% Contributors
+\author[8]{Lu Li}
+\author[1]{Jiajun Shi}
+\author[1]{Kaijing Ma}
+\author[1,7]{Shanda Li}
+\author[2,9]{Taylor Kergan}
+\author[2,9]{Andrew Smith}
+\author[1,10]{Xingwei Qu}
+\author[2]{Mude Hui}
+\author[1]{Bohong Wu}
+\author[1]{Qiyang Min}
+\author[1]{Hongzhi Huang}
+\author[1]{Xun Zhou}
+\author[1]{Tianle Cai}
+\author[6]{Wei Ye}
+\author[11]{Jiaheng Liu}
+\author[11]{Jian Yang}
+\author[11]{Yunfeng Shi}
+\author[10]{Chenghua Lin}
+\author[11]{Enduo Zhao}
+
+% Supervision (Corresponding Authors)
+\author[1,\dagger]{\\Ge Zhang*}
+\author[1,\dagger]{Wenhao Huang}
+\author[4,5]{Yoshua Bengio}
+\author[2,\dagger]{Jason Eshraghian}
+
+\affiliation[1]{ByteDance Seed}
+\affiliation[2]{UC Santa Cruz}
+\affiliation[3]{Princeton University}
+\affiliation[4]{Mila - Quebec AI Institute}
+\affiliation[5]{University of Montreal}
+\affiliation[6]{Peking University}
+\affiliation[7]{Carnegie Mellon University}
+\affiliation[8]{University of Pennsylvania}
+\affiliation[9]{Conscium}
+\affiliation[10]{University of Manchester}
+\affiliation[11]{M-A-P}
+\contribution[*]{Core Contributors}
+\contribution[\dagger]{Corresponding authors}
+
+\abstract{
+
+% We present \textbf{Ouro}, a family of Looped Language Models (\ut{}) that (i) perform latent reasoning via iterative shared-weight computation, (ii) introduce an entropy-regularized objective for learned depth allocation, and (iii) scale training to \textbf{7.7T} tokens. Our work validates that the benefits of recursion are not confined to reasoning-specific tasks; we observe all-around performance gains that lead to exceptional parameter efficiency. Through controlled experiments, we show this advantage stems not from increased knowledge storage, but from superior knowledge manipulation capabilities. Besides, we also show that our latent reasoning process is more faithful compared to standard LLMs. Our resulting 1.4B and 2.6B parameter models match the performance of up to 12B SOTA standard LLMs across a wide range of benchmarks, establishing recursive computation as a critical scaling direction in a data-constrained era.
+Modern LLMs are trained to `think' primarily via explicit text generation, such as chain-of-thought, which defers reasoning to post-training and under-leverages pre-training data. We present \textbf{Ouro}, named after the recursive Ouroboros, a family of pre-trained Looped Language Models (\ut{}) that instead build reasoning into the pre-training phase through (i) iterative computation in latent space, (ii) an entropy-regularized objective for learned depth allocation, and (iii) scaling to \textbf{7.7T} tokens. Through controlled experiments, we show this advantage stems not from increased knowledge storage, but from superior knowledge manipulation capabilities. We also show our latent reasoning is more faithful to the reasoning process than standard LLMs. Our resulting 1.4B and 2.6B models match the performance of up to 12B SOTA standard LLMs across a wide range of benchmarks, showing its potential as a scaling direction in a data-constrained era.
+}
+
+
+
+
+\date{\today}
+\correspondence{\email{zhangge.eli@bytedance.com}, \email{huang.wenhao@bytedance.com}, \email{jsn@ucsc.edu}}
+
+% You can add additional info fields as follows 
+\checkdata[Project Page]{\url{xxx}}
+
+\begin{document}
+
+\maketitle
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{figures/radar.pdf}
+    \caption{Ouro Looped Language Model performance. (Left) The parameter-shared looped architecture. (Middle \& Right) Radar plots comparing the Ouro 1.4B and 2.6B models, both with 4 recurrent steps (red), against individual transformer baselines. Our models demonstrate strong performance comparable to or exceeding much larger baselines.}
+    \label{fig:radar_main}
+\end{figure}
+
+\section{Introduction}
+
+The advancement of Large Language Models (LLMs) has historically relied on scaling up model size as the primary driver, accompanied by increases in data and compute~\cite{brown2020language}. However, deploying models with hundreds of billions of parameters requires extensive infrastructure, increasing latency, costs, and limiting accessibility. These factors make parameter efficiency critical: achieving better model capability within a fixed parameter budget. Such models not only mitigate overfitting on finite datasets with fewer trainable parameters, but also enable more practical deployment with reduced infrastructure requirements.
+
+There are two main avenues for enhancing parameter efficiency. The first applies a larger training corpus to models of all sizes~\cite{dubey2024llama}, although data scarcity increasingly constrains this path. The second leverages inference-time computation through Chain-of-Thought (CoT) reasoning~\cite{wei2022chain}, allowing models to expend more compute on complex problems via extended token generation.
+
+We explore a third pathway: achieving dynamic compute with fixed parameters through architectural innovation. This is realized by recursively applying forward the same parameter set, where a compact set of shared-weight layers is iteratively applied to simulate a much deeper network. We call this approach Looped Language Models (\ut{}). \ut{} pursues ``more compute for the same parameters'': each iteration refines hidden representations based on the previous step's output. Critically, \ut{} enables adaptive computation through a learned early exit mechanism: simple inputs can exit after fewer recurrent steps, while complex problems automatically allocate more iterations. This allows the model to dynamically match computational depth to input difficulty without increasing parameter count.
+
+\ut{} differs from inference-time methods like CoT. Rather than optimizing solution search through token generation, \ut{} constructs a deeper computational graph for the same parameter cost. As a more capable model per parameter, \ut{} exhibits superior token efficiency: it achieves higher performance than standard transformers of equivalent size when trained on identical, finite datasets. For example, our 1.4B parameter model with 4 recurrent steps (1.4B R4) matches the performance of 3-4B standard transformers, while our 2.6B R4 model rivals 7-8B models across diverse benchmarks. This offers a compelling third path that complements existing parameter-efficiency strategies.
+
+
+% These dominant strategies, however, are confronting their respective ceilings. \ridger{adding data is exhausted} Inference-time reasoning methods like CoT, while boosting task performance, may not truly elevate a model's intrinsic capability. Evidence suggests they primarily optimize a model's ability to find a correct solution path (improving ``Best@1'' accuracy), rather than expanding its underlying space of potential solutions (the ``Best@N'' capacity). In essence, they function as powerful search heuristics, not fundamental capability enhancers. Simultaneously, the brute-force data approach is running into the unavoidable ``data wall'', as high-quality text becomes a finite resource.
+
+
+
+While the foundational Universal Transformer architecture was proposed years ago~\cite{dehghani2018universal}, recent investigations into recurrent-depth paradigms have shown promising results: looped transformers~\cite{saunshi2025reasoning}, recursive transformers~\cite{bae2024relaxed}, and latent reasoning frameworks~\cite{geiping2025scaling,zeng2025pretraining} all demonstrate the potential benefits of deeper computational processing on equivalent training data. Despite their diverse terminologies and implementation details, these approaches share the core principle of \ut{}: iteratively applying shared-weight layers to decouple parameter count from computational depth. However, these explorations have been largely confined to a comparatively modest training scale, often limited to a few hundred billion tokens. This leaves a critical question unanswered: does the \ut{} paradigm merely accelerate convergence towards the same performance ceiling achievable by standard transformers, or does it enable models to attain a fundamentally higher level of capability for a given parameter count? In other words, does it make training faster, or does it make the final model better? Moreover, the mechanisms underpinning these performance gains remain poorly understood. It is unclear whether the iterative application of shared weights directly increases the effective capacity of the model in a manner analogous to adding more unique layers, or if alternative dynamics are responsible for the observed improvements. Whether the benefits stem from an enhanced model capacity or a different emergent property of recurrent processing is a pivotal, yet unresolved, question.
+
+In this work, we are trying to address these questions through a multi-faceted investigation, leading to several key contributions. We first conduct controlled experiments on synthetic tasks to understand the mechanism of \ut{} superiority, then validate our findings through large-scale pre-training on 7.7T tokens. To operationalize dynamic computation, we develop novel training objectives that enable flexible depth allocation while maintaining peak performance. Specifically, our contributions include:
+\begin{itemize}
+\item \textbf{Mechanistic understanding through synthetic tasks.} Using controlled experiments inspired by the physics of language models framework, we show that recurrence does not increase raw knowledge storage (approximately 2 bits per parameter for both looped and non-looped models) but dramatically enhances knowledge manipulation capabilities on tasks requiring fact composition and multi-hop reasoning.
+\item \textbf{Exceptional parameter efficiency at scale.} Through a 7.7T token pre-training run, we demonstrate that 1.4B and 2.6B parameter \ut{}s match the performance of 4B and 8B standard transformers respectively across nearly all benchmarks, achieving 2-3$\times$ parameter efficiency improvements critical for deployment under resource constraints. As illustrated in Figure~\ref{fig:radar_main}, our Ouro models demonstrate exceptional parameter efficiency across a suite of benchmarks, with our 1.4B and 2.6B parameter models matching the performance of larger standard transformers.
+\item \textbf{Entropy regularized adaptive computation.} We develop a training objective with a uniform prior over exit steps that enables unbiased exploration of all computational depths while preserving the ``deeper is better'' property, allowing learned adaptive allocation of recurrent steps based on input difficulty.
+% \item \textbf{Enhanced safety properties.} We demonstrate that \ut{} architectures exhibit improved safety characteristics compared to standard transformers of equivalent capability, with recurrent processing providing natural regularization against harmful outputs.
+% \item \textbf{Safety, faithfulness, and consistency.} \ut{} architectures reduce harmfulness on HEx\text{-}PHI~\citep{qifine}, with safety improving as recurrent steps increase, including extrapolated steps; their iterative latent updates yield a causally faithful reasoning process rather than post hoc rationalization; and intermediate recurrent outputs closely track final answers, enabling preemptive safety checks that integrate naturally with speculative decoding for low overhead enforcement.
+
+\item \textbf{Safety and faithfulness.} \ut{} architectures reduce harmfulness on HEx\text{-}PHI~\citep{qifine}, with safety improving as recurrent steps increase, including extrapolated steps. In contrast to CoT, our iterative latent updates yield a causally faithful reasoning process rather than post hoc rationalization.
+\end{itemize}
+
+
+
+Our investigation establishes \ut{} as a third scaling axis beyond model size and data, and we release the Ouro model family (1.4B and 2.6B parameters) demonstrating these principles at scale.
+
+\section{Related Works}
+
+ A standard $L$-layer Transformer can be conceptualized as a feed-forward stack of distinct functions. It processes an input sequence of hidden states $H^{(0)} \in \R^{N \times d}$ through a series of unique layers, each with its own set of parameters $\theta_l$:
+$$H_{\text{afinal}} = \text{TransformerLayer}_{\theta_L}(\dots(\text{TransformerLayer}_{\theta_2}(\text{TransformerLayer}_{\theta_1}(H^{(0)}))\dots))$$
+
+In contrast, \ut{} architectures, pioneered by the Universal Transformer~\cite{dehghani2018universal}, replace this explicit depth with iterative computation. They apply a single, parameter-shared Transformer block repeatedly for $T$ steps, acting as a recurrent function over the hidden states:
+$$H^{(t)} = \text{TransformerLayer}_{\theta}(H^{(t-1)}), \quad \text{for } t=1, \dots, T \text{, with } H^{(0)} \text{ as input}$$
+
+The foundational principles of this architecture have seen a resurgence in recent literature, as researchers adapt recurrent-depth structures to enhance the efficiency and reasoning capabilities of modern LLMs. For instance, works like \cite{geiping2025scaling} explicitly adopt a ``recurrent depth'' approach to scale test-time computation in latent space. Similarly, \cite{saunshi2025reasoning} demonstrate that ``looped transformers'' can match the performance of much deeper non-looped models on reasoning tasks, formally connecting looping to the generation of latent thoughts. The concept is further refined in methods that convert standard models into ``Relaxed Recursive Transformers'' with effective parameter sharing~\cite{bae2024relaxed}. Other works have explored this paradigm under different terminologies, such as ``pondering'' in continuous space~\cite{zeng2025pretraining} or fostering ``inner thinking'' for adaptive computation~\cite{chen2025inner}. More advanced architectures like Mixture-of-Recursions~\cite{bae2025mixture} combine the parameter efficiency of recursion with adaptive, token-level routing.
+
+Across all these works, from the original Universal Transformer to its modern descendants, this architectural shift can be understood through two complementary interpretations. From one perspective, it acts as an extremely parameter-efficient deep network, functionally equivalent to a standard Transformer where the weights of all layers are tied. From another, its iterative process can be framed as a form of latent reasoning. In this view, the sequence of hidden states $H^{(1)}, \dots, H^{(T)}$ forms a ``latent Chain-of-Thought,'' where the model progressively refines its internal representation to solve a given task. A common theme in this research is a shift from scale to substance. It shows that a model's ability to reason improves by iterating on a problem internally, an approach that doesn't require adding more parameters.
+
+\paragraph{Perspective 1: Parameter Sharing for Model Efficiency.}
+The interpretation of \ut{} as an aggressive form of parameter sharing is the more traditional view, with roots in efforts to create more compact and efficient models. This line of work treats the recurrent structure as a method for weight tying across depth. The most prominent example in the modern transformer era is ALBERT~\cite{lan2019albert}, which implements cross-layer parameter sharing, allowing a single block of Transformer layers to be reused multiple times. This was combined with embedding factorization to drastically reduce the model's total parameter count. Prior to the widespread adoption of LLMs, similar ideas were explored extensively, particularly in machine translation. Dabre et al. proposed recurrently stacking a single shared layer to reduce parameters~\cite{dabre2019recurrent}.  Research by \cite{takase2021lessons} systematically studied different sharing strategies to find a better balance between parameter reduction and performance. While this research direction became less prevalent with the rise of ever-larger models, it has recently been revitalized in the context of LLM era, particularly for edge-device usage. A notable example is Megrez2~\cite{li2025megrez2}, which introduces a novel cross-layer expert sharing mechanism, reusing expert FFN modules across adjacent layers. This modern adaptation achieves parameter reduction while retaining high model capacity, demonstrating a renewed interest in sharing-based architectures.
+
+\paragraph{Perspective 2: Latent Reasoning and Iterative Refinement.}
+A more dynamic and increasingly influential interpretation frames the \ut{}'s iterative process as a form of latent reasoning. In this view, each recurrent step is a non-verbal ``thought'' that refines the model's internal representation. The recent works cited previously, such as Ref.~\cite{geiping2025scaling} and Ref.~\cite{saunshi2025reasoning}, provide strong empirical evidence for this perspective by showing that increasing recurrent steps directly improve performance on complex reasoning tasks. Within this broad paradigm, one specific family of models makes the latent reasoning process more explicit by feeding hidden states back into the input stream. For example, Coconut~\cite{hao2024training} inserts a ``continuous thought'' vector, which is derived from the last-layer hidden state of the previous decoding step: as an extra token in the input for the current step, allowing the model to ``ponder'' in a continuous latent space. Similarly, CoTFormer~\cite{mohtashami2023cotformer} interleaves computed token activations back into the input sequence before the shared block of layers is executed again on the augmented sequence. These explicit feedback mechanisms are in contrast to the implicit reasoning of more direct \ut{} variants, where the entire thought process is contained within the evolution of hidden states from $H^{(t-1)}$ to $H^{(t)}$. This core principle of using shared parameters for iterative computation is being explored in various ways, from enhancing latent reasoning to enabling efficient model length expansion, as seen in the PHD-Transformer~\cite{wu2025efficient}.
+
+\section{Learning Adaptive Recurrence in \ut{}}
+
+This section explains how we train a \ut{} with an early exit mechanism while preserving 
+the ``deeper is better'' property. \Cref{fig:rlm_architecture} illustrates our architecture 
+during both training and inference phases. Our objective is to let the model decide how many 
+recurrent steps to use for each token and each example, spending less compute on easy 
+inputs and more compute on hard inputs, without sacrificing accuracy when many steps are available.
+
+We begin by introducing an entropy-regularized objective for training that balances task 
+performance with computational efficiency. We then present an alternative ELBO-based (Evidence Lower Bound) perspective that connects our approach to existing adaptive computation methods. Through controlled experiments, we demonstrate why our choice of uniform prior outperforms commonly used alternatives like geometric priors, examining effects on stability, exploration, generalization, and latency. Finally, we detail the exit criteria used during inference to enable adaptive computation allocation.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{figures/main_figure1_cropped.pdf}
+    \caption{\textbf{Overview of Looped Language Model (\ut{}) architecture.} 
+    \textbf{Left (Training):} During training, the model applies a stack of $N$ shared-weight layers 
+    for $n$ recurrent steps ($R=1$ to $R=n$). At each recurrent step $i$, an exit gate predicts 
+    the probability $p_i$ of exiting, and a language modeling head $\mathcal{L}_i$ computes 
+    the task loss. The training objective combines the expected task loss across all steps 
+    with an entropy regularization term $H(p_1, \ldots, p_n)$ to encourage exploration of 
+    different computational depths. 
+    \textbf{Right (Inference):} At inference time, the model can exit early based on the 
+    cumulative distribution function (CDF) computed from exit probabilities. When 
+    $\text{CDF}_i = \sum_{k=1}^{i} p_k$ exceeds a threshold, the model terminates at step $i$, 
+    enabling adaptive computation that allocates more steps to harder inputs while maintaining 
+    efficiency on simpler ones. The dashed line indicates potential future steps that may be 
+    skipped through early exit.}
+    \label{fig:rlm_architecture}
+\end{figure}
+
+\subsection{Entropy-Regularized Objective}
+
+To obtain a model that can exit early while maintaining performance, we need an objective that jointly optimizes accuracy and computational efficiency. We treat the exit step $z \in \{1,\dots,T_{\max}\}$ as a decision variable in a probability distribution and introduce a learned gating mechanism $q_\phi(z \mid x)$ that produces a distribution over the exit steps given the input $x$.
+
+Our training objective combines the expected task loss with entropy regularization:
+
+$$
+\mathcal{L} = \underbrace{\sum_{t=1}^{T_{\max}} q_\phi(z=t \mid x)\, \mathcal{L}_{\text{task}}^{(t)}}_{\text{expected task loss}} - \beta \cdot \underbrace{H(q_\phi(z \mid x))}_{\text{entropy regularization}}
+$$
+
+where $\mathcal{L}_{\text{task}}^{(t)}$ is the task loss (cross-entropy for next token prediction) if we exit at step $t$, and $H(q_\phi(z \mid x)) = -\sum_{t=1}^{T_{\max}} q_\phi(z=t \mid x) \log q_\phi(z=t \mid x)$ is the entropy of the exit distribution.
+
+The expected task loss encourages the model to perform well at the steps it chooses, while the entropy term prevents premature commitment to specific depths. The hyperparameter $\beta$ controls the exploration-exploitation trade-off: larger $\beta$ encourages more uniform distributions (higher entropy), allowing the model to explore different depths, while smaller $\beta$ allows more peaked distributions when the model is confident about the optimal depth for a given input.
+
+This entropy regularization naturally enables adaptive computation: for simple inputs where early steps suffice, the model can concentrate probability mass on small $t$ (low entropy), while for complex inputs requiring deeper reasoning, it maintains uncertainty across multiple depths (high entropy) until finding the optimal exit point.
+
+\subsection{Alternative Perspective: ELBO with Uniform Prior}
+
+The entropy-regularized objective can be equivalently viewed through the lens of variational inference. If we treat the exit step $z$ as a latent variable with a prior distribution $\pi$, we can derive an Evidence Lower Bound (ELBO) objective:
+
+$$
+\mathcal{L}_{\text{ELBO}} = \sum_{t=1}^{T_{\max}} q_\phi(z=t \mid x)\, \mathcal{L}_{\text{task}}^{(t)} + \beta \cdot \mathrm{KL}\!\big(q_\phi(z \mid x)\, \| \,\pi\big)
+$$
+
+When we choose a uniform prior $\pi_t = \frac{1}{T_{\max}}$, the KL divergence simplifies to:
+
+$$
+\mathrm{KL}(q_\phi(z \mid x) \| \pi) = -H(q_\phi(z \mid x)) + \log T_{\max}
+$$
+
+Since $\log T_{\max}$ is constant, minimizing the ELBO with a uniform prior is equivalent to our entropy-regularized objective. This connection reveals that our approach aligns with adaptive computation methods like PonderNet~\cite{banino2021pondernet}, which also optimize an ELBO objective for dynamic halting.
+
+\subsection{Adaptive Exit Gate Training}
+\label{ut:adaptive_exit}
+
+The training of our early exit mechanism represents a critical component of the \ut{} training pipeline, enabling the model to learn when to allocate additional computational depth based on input difficulty. Unlike traditional approaches that treat the gating mechanism as an auxiliary component, we design our gate training to directly optimize for adaptive computation allocation while preserving the model's core reasoning capabilities.
+
+\paragraph{Training Objective and Loss Formulation.}
+At the heart of our gate training approach lies an adaptive exit loss that teaches the model to make intelligent stopping decisions based on actual performance improvements. For each recurrent step $n \geq 2$, we first compute the task loss $\mathcal{L}_{\text{task}}^{(n)}(t)$ at each token position $t$ using cross-entropy between the language model predictions and the ground truth labels. To prevent these task losses from influencing the main model parameters during gate training, we compute them within a no-gradient context, effectively detaching them from the computational graph that would propagate gradients to the transformer blocks.
+
+The gate at step $n$ produces a halting probability $\lambda^{(n)}_t = \sigma(\text{Gate}(h^{(n)}_t))$ through a learned linear projection followed by sigmoid activation. This probability represents the model's confidence that computation should terminate after completing step $n$. To train this gating mechanism, we construct an adaptive loss that compares the gate's prediction against an idealized stopping behavior derived from actual performance metrics.
+
+We define the loss improvement $I^{(n)}_t = \max(0, \mathcal{L}_{\text{task}}^{(n-1)}(t) - \mathcal{L}_{\text{task}}^{(n)}(t))$ as the reduction in task loss achieved by advancing from step $n-1$ to step $n$. This improvement metric directly measures whether the additional computation was beneficial. We then compute an ideal continuation probability $w^{(n)}_t = \sigma(k \cdot (I^{(n)}_t - \tau))$ using hyperparameters $k=50.0$ for the sigmoid slope and $\tau=0.005$ as the improvement threshold. When loss improvement exceeds the threshold $\tau$, the model should continue computing ($w^{(n)}_t \approx 1$); when improvement falls below the threshold, an early exit becomes preferable ($w^{(n)}_t \approx 0$).
+
+The adaptive exit loss for step $n$ takes the form of a weighted cross-entropy averaged over the batch ($B$) and sequence length ($T$) between this ideal behavior and the gate's actual prediction:
+$$\mathcal{L}_{\text{adaptive}}^{(n)} = -\frac{1}{BT}\sum_{b=1}^{B}\sum_{t=1}^{T} \left[ w^{(n)}_{b,t} \log(1-\lambda^{(n-1)}_{b,t}) + (1-w^{(n)}_{b,t}) \log(\lambda^{(n-1)}_{b,t}) \right]$$
+This loss trains the gate at step $n-1$ by comparing its decision to continue ($\lambda^{(n-1)}_{b,t}$) against the ideal behavior ($w^{(n)}_{b,t})$ derived from the outcome of step $n$. This formulation penalizes two failure modes simultaneously: the gate wanting to stop when it should continue (when $w^{(n)}_{b,t}$ is high, but $\lambda^{(n-1)}_{b,t}$ is also high), and the gate wanting to continue when it should stop (when $w^{(n)}_{b,t}$ is low, but $\lambda^{(n-1)}_{b,t}$ is also low). The total training loss averages this adaptive loss across all recurrent steps: $\mathcal{L}_{\text{total}} = \frac{1}{N-1} \sum_{n=2}^{N} \mathcal{L}_{\text{adaptive}}^{(n)}$.
+
+\paragraph{Gradient Flow and Parameter Freezing.}
+A crucial design choice in our gate training methodology concerns gradient flow management. The adaptive exit loss must provide learning signals exclusively to the gating mechanism without interfering with the language model's learned representations. We achieve this through careful gradient isolation: task losses $\mathcal{L}_{\text{task}}^{(n)}(t)$ are computed within torch.no\_grad() contexts, ensuring that $\frac{\partial \mathcal{L}_{\text{total}}}{\partial \theta_{\text{main}}} = 0$ while maintaining $\frac{\partial \mathcal{L}_{\text{total}}}{\partial \theta_{\text{gate}}} \neq 0$. This isolation allows the gate to observe and learn from the model's performance characteristics across different computational depths without altering those characteristics through backdoor gradient paths.
+
+
+
+\subsection{Why Uniform Beats Geometric}
+
+While our formulation connects to PonderNet, a critical difference lies in the choice of prior. PonderNet and other adaptive computation methods typically employ geometric priors:
+
+$$
+\pi_t^{\mathrm{geo}} = \frac{\lambda\,(1-\lambda)^{\,t-1}}{1-(1-\lambda)^{\,T_{\max}}}, \quad t=1,\dots,T_{\max}, \quad \lambda\in(0,1)
+$$
+
+These priors embody a strong inductive bias toward shallow computation by placing more mass on early steps, explicitly encouraging the model to exit early. Similarly, methods like Recurrent Depth use Poisson-lognormal priors that also favor shallow computation.
+
+We argue that such biased priors conflate two distinct objectives: (1) learning when to exit based on input difficulty, and (2) minimizing average computation cost. By building in a preference for early exit during training, these priors risk under-exploring deeper steps and may fail to fully realize the benefits of recurrent depth.
+
+In contrast, the uniform prior makes no assumptions about the optimal exit distribution. It treats all depths equally during training, allowing the model to discover the natural computational requirements of different inputs without a pre-imposed inductive bias. This is particularly important for complex reasoning tasks where the ``deeper is better'' property should emerge from the data rather than being constrained by the prior.
+
+The uniform prior offers several key advantages. First, it enables unbiased exploration during training, allowing the model to freely investigate all depths and ensuring that deeper steps receive adequate gradient signals to develop their full capacity. This unbiased training translates to flexible deployment at inference time, where we can still control the compute-accuracy trade-off by adjusting the sampling temperature or cumulative probability threshold, without being constrained by pre-imposed inductive biases baked in during training. In contrast, a uniform prior is agnostic to depth, allowing the model to empirically learn the computational needs of each input and letting the ``deeper is better'' property emerge naturally on complex tasks. We provide a detailed empirical validation of this choice against geometric priors in \Cref{app:prior_empirical}.
+
+
+\subsection{Exit Criteria}
+
+During inference, the model must decide at each step $t$ whether to continue processing or produce the final output. We consider two approaches for this decision detailed below.
+
+\paragraph{Sampling-based exit.} The most direct approach samples from the learned posterior distribution $p(i|x)$ at each step $t$. Specifically, we sample from a Bernoulli distribution with parameter $\lambda_t = \Lambda([h_t, h_{t-1}])$. If the sample indicates exit, we use $C(h_t)$ as the final prediction; otherwise, we proceed to step $t+1$.
+
+\paragraph{Q-exit criterion.} Following Ref.\cite{balagansky2022palbert}, we adopt a deterministic exit criterion based on the cumulative distribution function (CDF). At each step $t$, we compute:
+$$
+\text{CDF}(t) = \sum_{i=1}^{t} p(i|x) = \sum_{i=1}^{t} \lambda_i \prod_{j=1}^{i-1}(1 - \lambda_j)
+$$
+where $\lambda_i$ is the probability of exiting at step $i$ produced by the layer $\Lambda([h_i, h_{i-1}])$, and $p(i|x)$ represents the probability of exiting exactly at step $i$ given input $x$. The product term $\prod_{j=1}^{i-1}(1 - \lambda_j)$ ensures that we only exit at step $i$ if we did not exit at any earlier step $j < i$. We perform early exit when the CDF exceeds threshold $q \in [0,1]$:
+$$
+t_{\text{exit}} = \min\{t : \text{CDF}(t) \geq q\}
+$$
+
+ The threshold $q$ controls the compute-accuracy tradeoff, where lower values encourage earlier exits and higher values allow deeper computation.
+
+\paragraph{Discussion.} While Q-exit provides a practical solution, the optimal strategy for leveraging the learned exit probabilities remains an open question worthy of further exploration. Future work could investigate adaptive threshold selection, input-dependent exit criteria, or alternative interpretations of the halting distribution.
+
+
+
+
+\section{Training Looped Language Models}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{figures/training_process.pdf}
+    \caption{The Ouro model training pipeline. The process starts with a common Warmup and an initial 3T token Stable Training phase. The model is then split into two streams: one 'Keep 1.3B' (resulting in Ouro-1.4B) and one 'Upcycle 2.6B' (resulting in Ouro-2.6B). Both streams independently undergo an identical subsequent four-stage training process: a second Stable Training (3T tokens), CT Annealing (1.4T tokens), LongCT (20B tokens), and Mid-Training (300B tokens). This 7.7T token pre-training pipeline produces the base models (Ouro-1.4B and Ouro-2.6B), which are then passed through a final Reasoning SFT stage to create the Ouro-Thinking models.}
+    \label{fig:training_process}
+\end{figure}
+Our training pipeline for the Ouro model family is a multi-stage process, as illustrated in Figure~\ref{fig:training_process}. The process begins with a common warmup stage, followed by an initial Stable Training phase on 3T tokens. After this, the model is split into two variants: a 1.4B parameter model and a 2.6B model created via upcycling. Both variants then undergo an identical series of four subsequent training stages: a second \textbf{Stable Training} phase (3T tokens), CT Annealing (1.4T tokens), LongCT (20B tokens), and \textbf{Mid-Training} (300B tokens). This comprehensive pipeline, totaling 7.7T tokens of training data, produces our base models, \textbf{Ouro-1.4B} and \textbf{Ouro-2.6B}. Finally, these base models are further refined through a specialized Reasoning SFT (Supervised Fine-Tuning) stage to create the final, reasoning-focused models: \textbf{Ouro-1.4B-Thinking} and \textbf{Ouro-2.6B-Thinking}. This section details the model architecture, data composition, and specific configurations used in each of these training stages.
+
+\subsection{Model Architecture} 
+
+Our Ouro models are built upon the standard decoder-only Transformer architecture~\cite{vaswani2017attention}, prioritizing a clean implementation of the looped computation mechanism without extraneous modifications. The core architecture consists of a stack of identical Transformer blocks, which are applied recurrently.
+
+Each block uses Multi-Head Attention (MHA) with Rotary Position Embeddings (RoPE)~\cite{su2023roformerenhancedtransformerrotary} to handle sequence order. For computational efficiency, The feed-forward network (FFN) in each block utilizes a SwiGLU activation~\cite{shazeer2020glu}. To enhance training stability, which is especially critical for deep recurrent computation, we employ a \textbf{sandwich normalization} structure (also known as pre-normalization). This places an \texttt{RMSNorm} layer before both the attention and FFN sub-layers, an approach noted in prior literature to improve stability in loop transformers~\cite{geiping2025scaling}.
+
+\begin{table}[htbp]
+\centering
+\caption{Ouro model architecture configurations. Both models share the same vocabulary and core component types, differing in parameter count and layer depth.}
+\label{tab:model_architecture}
+\small % Using \small to ensure the table fits well
+\begin{tabular}{@{}lccccccc@{}}
+\toprule
+\textbf{Model} & \textbf{Parameters} & \textbf{Layers} & \textbf{Hidden Size ($d_{\text{model}}$)} & \textbf{Attention} & \textbf{FFN} & \textbf{Pos. Embed.} & \textbf{Vocab Size} \\
+\midrule
+Ouro 1.4B & 1.4B & 24 & 2048 & MHA & SwiGLU & RoPE & 49,152 \\
+Ouro 2.6B & 2.6B & 48 & 2048 & MHA & SwiGLU & RoPE & 49,152 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+For both models, we use a shared vocabulary of 49,152 tokens, reused from the SmolM2~\cite{allal2025smollm2} model. This tokenizer is optimized for English and code and contains no Chinese tokens. Our inclusion of Chinese data in Stage 1 thus resulted in highly inefficient tokenization and poor performance. Consequently, we removed all Chinese data from Stage 2 onwards to focus our training budget on English and code. This limited vocabulary may also impose constraints on the model's advanced mathematical reasoning capabilities due to a potential lack of specialized symbols. This shift is reflected in the data compositions detailed in the following sections.
+
+\subsection{Data}
+As data defines the capability boundaries of large foundational models, our model is trained on a diverse collection of datasets spanning multiple domains and stages, including web data, mathematical content, code, and long-context documents, enabling it to perform acquire fundamental language understanding and perform advanced reasoning, coding, and long-context understanding through a unified training pipeline. In addition to standard web crawl datasets, we adopt specialized datasets for mathematical reasoning and code generation to further enhance the model's capabilities for complex problem-solving. 
+In \Cref{tab:training_data_details}, we summarize the composition and quantity of our training data across different stages.
+In the following sections, we detail our dataset sources, preparation protocols, and data mixing strategies.
+
+
+\begin{table}[ht]
+\label{tab:data_stat_of_training_corpus}
+\small
+\centering
+\caption{\textbf{Statistics of the training corpus.} Since data are randomly sampled during pre-training, the dataset size does not directly correspond to the total number of seen tokens.}
+\label{tab:training_data_details}
+\begin{tabular}{l|ccc}
+\toprule
+\textbf{Data Source} & \textbf{Stage} & \textbf{\# Tokens (B)} & \textbf{\# Used Tokens (B)} \\
+\hline
+Nemotron-CC (Web Data) & Stage 1 & 6386 & 4404 \\
+MAP-CC (Web Data) & Stage 1 & 800 & 780\\
+Ultra-FineWeb-zh (Web Data) & Stage 1 & 120 & 120 \\
+OpenCoder-pretrain & Stage 1 & 450 & 450 \\
+MegaMath-web  & Stage 1 & 247 & 246 \\
+MegaMath-high-quailty & Stage 2 & 64 & 64\\
+Nemotron-CC-Math-v1 & Stage 2 & 210 & 210 \\
+Nemotron-Code & Stage 2 & 53 & 53 \\
+Nemotron-SFT-Code & Stage 2 & 48 & 48 \\
+Nemotron-SFT-General & Stage 2 & 87 & 87 \\
+OpenCoder-Annealing & Stage 2 & 7 & 7  \\
+ProLong-64K & Stage 3 & 20 & 20 \\
+Mid-training SFT Mix & Stage 4 & 182 & 90 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[ht]
+\small
+\centering
+\caption{\textbf{Data composition for Stage 1 (Pre-training Phase I \& II).} Total dataset size: 6T tokens.}
+\label{tab:stage1_composition}
+\begin{tabular}{l|c}
+\toprule
+\textbf{Data Source} & \textbf{Proportion (\%)} \\
+\hline
+Nemotron-CC & 73.4 \\
+MAP-CC & 13.0 \\
+Ultra-FineWeb-zh & 2.0 \\
+OpenCoder-pretrain & 7.5 \\
+MegaMath-web & 4.1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Data Composition}
+
+The capabilities of modern language models primarily stem from their training data, and this principle holds true for our model as well. To ensure reproducibility, our training corpus is entirely composed of open-source datasets, with data statistics summarized in \autoref{tab:stage1_composition}. We partition the data into four distinct subsets, called stages, each employing different data construction strategies that align with the Warmup-Stable-Decay (WSD)~\cite{wen2024understanding} learning rate scheduler, which is a framework now widely adopted in modern language model pretraining.
+
+\paragraph{Stage 1: Pre-training}
+The pre-training stage supports the warmup and stable phases of training. The dataset is primarily composed of Web CommonCrawl (CC) data. Since our objective is to train the model on more than 2T tokens, many commonly used open-source datasets would not suffice: Fineweb-Edu~\cite{penedo2024fineweb} provides 1.3T tokens, and DCLM~\cite{li2024dclm} offers 2.6T tokens. We select Nemotron-CC~\cite{su2024nemotron} (6.3T tokens) as the main dataset for the stable phase due to its large scale and suitability for our training requirements. To provide the model with basic Chinese proficiency, we include Ultra-FineWeb-zh~\cite{wang2025ultra} and MAP-CC~\cite{du2024chinese}. Additionally, to enhance coding and mathematical abilities, we incorporate OpenCoder~\cite{Huang2024OpenCoderTO} and MegaMath~\cite{zhou2025megamath}.
+
+\paragraph{Stage 2: Continual Training (CT) Annealing}
+The CT annealing stage incorporates higher-quality data to enhance the model under the annealing learning rate. We construct our dataset using the high-quality subset of Nemotron-CC as the base. To further strengthen mathematical, coding, and general capabilities, we incorporate the high-quality subset of MegaMath, Nemotron-CC-Math-v1~\cite{karimi2025nemotroncc,nvidia2025nvidianemotronnano2}, OpenCoder-Annealing~\cite{Huang2024OpenCoderTO}, Nemotron-Pretraining-Code-v1~\cite{nvidia2025nvidianemotronnano2}, and Nemotron-Pretraining-SFT-v1~\cite{nvidia2025nvidianemotronnano2}.
+
+\begin{table}[ht]
+\small
+\centering
+\caption{\textbf{Data composition for Stage 2 (CT Annealing).} Total dataset size: 1.4T tokens.}
+\label{tab:stage2_composition}
+\begin{tabular}{l|c}
+\toprule
+\textbf{Data Source} & \textbf{Proportion (\%)} \\
+\hline
+Nemotron-CC-high-quailty & 66.5 \\
+Nemotron-CC-Math-v1 & 15.0 \\
+MegaMath-high-quailty & 4.6 \\
+OpenCoder-LLM/opc-annealing-corpus & 0.5 \\
+Nemotron-Pretraining-Code-v1/Synthetic-Code & 3.8 \\
+Nemotron-Pretraining-SFT-v1/Nemotron-SFT-Code & 3.4 \\
+Nemotron-Pretraining-SFT-v1/Nemotron-SFT-General & 6.2 \\
+
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\paragraph{Stage 3: Long Context Training (LongCT)}
+The LongCT stage extends the long-context capabilities of the model. We adopt the 64K-length subset of ProLong~\cite{gao2024train}, consisting of 20B tokens, to train the model on longer sequences and improve its ability to handle long contexts.
+
+\paragraph{Stage 4: Mid-training}
+The mid-training stage leverages a wide and diverse set of extremely high-quality data, consisting of both <Question, Answer> and <Question, CoT, Answer> samples, to further enhance the model's advanced abilities. We integrate more than 20 open-source supervised fine-tuning (SFT) datasets to maximize data diversity, while conducting thorough decontamination to minimize potential overlaps with mainstream evaluation benchmarks. All samples are converted into ChatML format to reduce alignment tax in the subsequent post-training stage. After processing the previous datasets, we obtain a total of 182B tokens, from which we sample 90B tokens to form the newly incorporated datasets. To ensure stable data distribution during training, 30B tokens from Stage 1 and 180B tokens from Stage 2 are replayed, resulting in an effective training volume of 300B tokens. Consequently, this stage is designed to push the model to the limits of its advanced abilities developed during pretraining.
+
+
+\begin{table}[b!]
+\small
+\centering
+\caption{\textbf{Training recipe.} High-quality data stages are highlighted in \colorbox{lightergray}{gray}.}
+\label{tab:training_recipe}
+\begin{tabular}{l|ccccc}
+\toprule
+ & \textbf{Stage 1a} & \textbf{Stage 1b} & \textbf{Stage 2} & \textbf{Stage 3} & \textbf{Stage 4} \\
+ & \textbf{Pre-train I} & \textbf{Pre-train II} & \textbf{CT Annealing} & \textbf{LongCT} & \textbf{Mid-training} \\
+\hline
+\textbf{Hyperparameters} \\
+Learning rate (Final) & $3.0\times10^{-4}$ & $3.0\times10^{-4}$ & $3.0\times10^{-5}$ & $3.0\times10^{-5}$ & $1.0\times10^{-5}$ \\
+LR scheduler & Constant & Constant & Cosine Decay & Constant & Cosine Decay \\
+Weight decay & \multicolumn{5}{c}{0.1} \\
+Gradient norm clip & \multicolumn{5}{c}{1.0} \\
+Optimizer & \multicolumn{5}{c}{AdamW ($\beta_1=0.9$, $\beta_2=0.95$)} \\
+Batch size (tokens) &4M$\rightarrow$ 8M & \multicolumn{4}{c}{8M} \\
+Sequence length & 4K & 4K & 16K & 64K & 32K \\
+Training tokens & 3T & 3T & 1.4T & 20B & 300B \\
+Recurrent steps & 8 & \multicolumn{4}{c}{4} \\
+$\beta$ for KL divergence & 0.1 & \multicolumn{4}{c}{0.05} \\
+RoPE base & 10K & 10K & 40K & 1M & 1M \\
+\midrule
+\textbf{Data Focus} \\
+Web data & High & High & Medium & Low & Low \\
+Math \& Code & Low & Low & High & Low & High \\
+Long-context & None & None & Low & High & Medium \\
+SFT-quality & None & None & Low & Low & High \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\subsection{Pre and Mid-Training}
+
+We adopt a multi-stage training strategy using a dynamic mixture of the curated data described, specifically: a Pre-training stage (split into two phases with different recurrent configurations), a CT Annealing stage for quality enhancement, a LongCT stage for context extension, and a Mid-training stage for advanced capability refinement. Throughout our training pipeline, we train the model with a maximum of \textbf{4 recurrent steps}. 
+
+\subsubsection{Training Stability and Adaptive Configuration}
+
+Throughout our training process, we prioritized stability over aggressive scaling, making several key adjustments based on empirical observations of training dynamics. These decisions were critical for achieving stable convergence with recurrent architectures, which exhibit different optimization characteristics compared to standard transformers.
+
+\paragraph{Recurrent Step Reduction for Stability.} Our initial experiments with 8 recurrent steps in Stage 1a reveal training instabilities, including loss spikes and gradient oscillations. We hypothesize this stems from the compounding gradient flow through multiple recurrent iterations, which can amplify small perturbations. Consequently, we reduced the recurrent steps from 8 to 4 in Stage 1b, finding this sweet spot balanced computational depth with training stability.
+
+\paragraph{Batch Size Scaling.} To further enhance stability, we progressively increased the batch size from 4M to 8M tokens. Larger batch sizes provide more stable gradient estimates, which is particularly important for recurrent architectures where gradient flow through multiple iterations can introduce additional variance.
+
+\paragraph{KL Divergence Coefficient Reduction.} We strategically reduced $\beta$ from 0.1 in Stage 1a to 0.05 in subsequent stages. This reduction serves dual purposes: (1) it decreases the conflicting gradients between task loss and the KL penalty, leading to more stable optimization, and (2) it reduces the ``pull'' from the uniform prior, allowing the model greater freedom to explore beneficial depth patterns without being artificially constrained. This adjustment was crucial for maintaining stable training dynamics while enabling the model to learn effective depth allocation.
+
+\subsubsection{Stage-wise Training Details}
+
+We utilize the flame~\cite{zhang2025flame} framework for performing pretraining, built upon torchtitan~\cite{liang2025torchtitan}. To fully utilize our limited resources, we adopt an upcycling strategy that enables efficient scaling of model capacity during training.
+
+\begin{itemize}[itemsep=0.0pt,topsep=0pt,leftmargin=*]
+    \item \textbf{Stage 1a: Pre-training Phase I (Exploration Phase).} We initially train the model on 3T tokens of web data from Nemotron-CC with 8 recurrent steps. The training uses the Warmup-Stable-Decay (WSD) learning rate scheduler with a peak learning rate of $3 \times 10^{-4}$. The sequence length is set to 4K tokens with an initial batch size of 4M tokens, gradually increased to 8M for stability. During this phase, we observed training instabilities that prompted our subsequent architectural adjustments.
+    \item \textbf{Stage 1b: Pre-training Phase II with Stability-Driven Upcycling.} After identifying stability issues in Stage 1a, we implemented an architectural pivot: reducing recurrent steps from 8 to 4. To maintain computational efficiency while improving stability, we split our approach into two variants:
+    \begin{itemize}
+        \item \textbf{Variant 1}: A 1.4B parameter model maintaining 24 layers with 4 recurrent steps
+        \item \textbf{Variant 2}: A 2.6B parameter model created through layer stacking (48 layers) with 4 recurrent steps
+    \end{itemize}
+    The recurrent nature of our architecture makes this upcycling process particularly smooth, as the shared weights across iterations naturally facilitate layer duplication without the typical instabilities seen in standard transformer upcycling. Both variants are trained on an additional 3T tokens with the stabilized configuration. The data composition is carefully balanced as shown in Table~\ref{tab:stage1_composition}.
+    
+    \item \textbf{Stage 2: CT Annealing.} Building on the stable foundation from Stage 1b, we enhance the model with higher-quality data while annealing the learning rate to $3 \times 10^{-5}$. The training corpus comprises 1.4T tokens with increased emphasis on mathematical and coding capabilities. >We extend the sequence length to 16K tokens, exceeding the length of most samples to minimize truncation and better utilize the enhanced data quality. The recurrent steps remain at 4, having proven optimal for the stability-performance trade-off. The data composition is carefully balanced as shown in Table~\ref{tab:stage2_composition}.
+    
+    \item \textbf{Stage 3: LongCT.} This stage focuses on extending the model's context window capabilities. We train on 20B tokens from the ProLong-64K dataset with sequences of 64K tokens, maintaining the batch size at 8M tokens. The reduced KL coefficient ($\beta = 0.05$) continues to provide stable training dynamics even with these extended sequences.
+    
+    \item \textbf{Stage 4: Mid-training.} The final stage leverages 90B tokens of extremely high-quality SFT data, consisting of both <Question, Answer> and <Question, CoT, Answer> samples. All SFT-style data is converted to ChatML format to facilitate subsequent post-training alignment. The learning rate is further reduced to $1 \times 10^{-5}$ with a cosine scheduler to help the model better absorb on this diverse, high-quality dataset.
+\end{itemize}
+
+\paragraph{Optimization Configuration.} 
+Throughout all stages, we use AdamW optimizer with weight decay set to 0.1, $\beta_1 = 0.9$, $\beta_2 = 0.95$, and gradient clipping at 1.0. These conservative settings were chosen specifically to maintain stability with recurrent architectures.
+
+\paragraph{Learning Rate Considerations.} 
+We empirically found that recurrent architectures require smaller learning rates compared to standard transformers of equivalent parameter count. While resource constraints prevented exhaustive hyperparameter search, our chosen rates represent conservative values that prioritized stable convergence over potentially faster but riskier optimization trajectories.
+
+\paragraph{Sequence Length Progression.} 
+The sequence length is progressively increased across stages: 4K tokens for both pre-training phases, 16K for continual training with learning rate annealing, 64K for long-context training, and 32K for mid-training. This gradual progression helps maintain stability while enhancing the training throughput and expanding the model's long-context capability.
+
+
+\subsection{Supervised Fine-Tuning}
+
+
+\paragraph{Data Composition.} We perform supervised fine-tuning (SFT) on a diverse corpus of approximately 8.3M examples drawn from high-quality public datasets. As shown in Table~\ref{tab:sft_data}, our training mixture emphasizes mathematical reasoning (3.5M examples) and code generation (3.2M examples), while also incorporating scientific reasoning (808K examples) and conversational abilities (767K examples). 
+
+For mathematical reasoning, we combine OpenThoughts3 \citep{guha2025openthoughts} and AceReason-1.1-SFT \citep{liu2025acereason} to provide comprehensive coverage of problem-solving strategies. Our code training data aggregates multiple sources including AceReason-1.1-SFT, OpenCodeReasoning \citep{ahmad2025opencodereasoning}, Llama-Nemotron-Post-Training-Dataset \citep{bercovich2025llama}, and OpenThoughts3, ensuring broad exposure to diverse programming paradigms and reasoning patterns. Scientific reasoning capabilities are developed through OpenThoughts3 and Llama-Nemotron-Post-Training-Dataset, while conversational proficiency is enhanced using the DeepWriting-20K \citep{wang2025reverse} dataset.
+
+\paragraph{Training Configuration.} We train for 2 epochs with a maximum sequence length of 32K tokens using the LlamaFactory codebase \citep{zheng2024llamafactory}. We employ the Adam optimizer with a learning rate of $2 \times 10^{-5}$ and $\beta = (0.9, 0.95)$, applying a cosine decay schedule for stable convergence.\footnote{Training was interrupted due to infrastructure issues; we resumed from the last saved checkpoint.}
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{l|p{10cm}|r}
+    \toprule
+       Topic  & Data Source & Size \\ \midrule
+    Math   &  OpenThoughts3, AceReason-1.1-SFT & 3.5M \\
+    Code   & AceReason-1.1-SFT, OpenCodeReasoning, Llama-Nemotron-Post-Training-Dataset, OpenThoughts3 & 3.2M \\ 
+    Science & OpenThoughts3, Llama-Nemotron-Post-Training-Dataset & 808K \\
+    Chat & DeepWriting-20K & 767K \\ \bottomrule
+    \end{tabular}
+    \caption{Supervised fine-tuning data composition. The training corpus comprises 8.3M examples across four key capability domains.}
+    \label{tab:sft_data}
+\end{table}
+
+
+\section{Experiments}
+\subsection{Base Model Evaluation}
+
+We conduct comprehensive evaluations of the Ouro base models trained on 7.7T tokens using the \ut{} architecture. The evaluation focuses on their performance across general knowledge, reasoning, mathematics, science, coding, and multilingual capabilities. All benchmarks are evaluated using \texttt{lm-eval-harness}~\citep{eval-harness} and \texttt{evalplus}~\citep{evalplus} frameworks with settings detailed in Table~\ref{tab:eval_base_settings}.
+
+For the base model baselines, we compare our Ouro models with leading open-source base models, including Qwen2.5 \citep{qwen2}, Qwen3 \citep{qwen3}, Gemma3 \citep{team2025gemma3}, Llama3.1 \citep{dubey2024llama}, and Llama3.2 \citep{dubey2024llama} series base models. All models are evaluated using the same evaluation pipeline to ensure fair comparison.
+
+
+\begin{table}[htbp]
+\centering
+\caption{Evaluation settings and benchmark sources for base models.}
+\label{tab:eval_base_settings}
+\footnotesize
+\begin{tabular}{lll}
+\toprule
+\textbf{Benchmark} & \textbf{Settings} & \textbf{Framework}\\
+\midrule
+\multicolumn{3}{l}{\textbf{General}} \\
+\quad MMLU~\citep{hendrycks2020measuring} & logprobs, 5-shot & \texttt{lm-eval-harness}\\
+\quad MMLU-Pro~\citep{wang2024mmlu} & strict match, 5-shot CoT & \texttt{lm-eval-harness}  \\
+\quad BBH~\citep{suzgun2022challenging} & strict match, 3-shot CoT & \texttt{lm-eval-harness}\\
+\quad ARC-C~\citep{clark2018think} & logprobs, 25-shot & \texttt{lm-eval-harness} \\
+\quad HellaSwag~\citep{zellers2019hellaswag} & logprobs, 10-shot & \texttt{lm-eval-harness}\\
+\quad Winogrande~\citep{sakaguchi2021winogrande} & logprobs, 5-shot & \texttt{lm-eval-harness}\\
+
+\midrule
+\multicolumn{3}{l}{\textbf{Math}} \\
+\quad GSM8k~\citep{cobbe2021training} & strict match, 3-shot CoT & \texttt{lm-eval-harness} \\
+\midrule
+\multicolumn{3}{l}{\textbf{Code}} \\
+\quad HumanEval~\citep{chen2021codex}  & pass@1 & \texttt{evalplus} \\
+\quad HumanEval+~\citep{evalplus} & pass@1 & \texttt{evalplus}\\
+\quad MBPP~\citep{austin2021program} & pass@1 & \texttt{evalplus} \\
+\quad MBPP+~\citep{evalplus} & pass@1 & \texttt{evalplus}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{\textbf{Comparison of 1.4B  \ut{} model with 1-4B parameter baselines.} The best score is \textbf{bolded}, and the second-best is \underline{underlined}. \ut{}'s column is highlighted in gray.}
+\label{tab:base-1.4B}
+\small
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}lcccccccccc@{}}
+\toprule
+ & \textbf{Gemma3} & \textbf{Llama3.2} & \textbf{Qwen2.5} & \textbf{Qwen3} & \textbf{Qwen2.5} & \textbf{Llama3.2} & \textbf{Qwen3} & \textbf{Gemma3} & \cellcolor{lightergray}\textbf{Ouro} \\
+ & \textbf{1B} & \textbf{1.2B} & \textbf{1.5B} & \textbf{1.7B} & \textbf{3B} & \textbf{3B} & \textbf{4B} & \textbf{4B} & \cellcolor{lightergray}\textbf{1.4B R4} \\
+\midrule
+Architecture & Dense & Dense & Dense & Dense & Dense & Dense & Dense & Dense & \cellcolor{lightergray}\ut{}\\
+\# Params & 1.0B & 1.0B & 1.5B & 1.7B & 3.0B & 3.0B & 4.0B & 4.0B & \cellcolor{lightergray}1.4B\\
+\# Tokens & 2T & 9T & 18T & 36T & 18T & 9T & 36T & 4T & \cellcolor{lightergray}7.7T\\
+\midrule
+\multicolumn{10}{c}{\textit{General Tasks}} \\
+\midrule
+MMLU & 39.85 & 45.46 & 60.99 & 62.46 & 65.62 & 59.69 & \underline{73.19} & 58.37 & \cellcolor{lightergray}\textbf{67.35} \\
+MMLU-Pro & 11.31 & 11.80 & 29.11 & 37.27 & 37.87 & 33.34 & \textbf{51.40} & 34.61 & \cellcolor{lightergray}\underline{48.62} \\
+BBH & 30.26 & 30.72 & 43.66 & 53.51 & 55.37 & 39.45 & \underline{70.95} & 66.32 & \cellcolor{lightergray}\textbf{71.02} \\
+ARC-C & 39.25 & 41.98 & 54.44 & 55.72 & 55.46 & 52.47 & \textbf{63.65} & \underline{60.92} & \cellcolor{lightergray}\underline{60.92} \\
+HellaSwag & 56.12 & 59.35 & 67.73 & 67.09 & 74.54 & 73.09 & \textbf{75.66} & \underline{75.58} & \cellcolor{lightergray}74.29 \\
+Winogrande & 58.72 & 62.75 & 66.77 & 66.30 & 70.17 & 69.14 & \underline{71.19} & 71.07 & \cellcolor{lightergray}\textbf{72.30} \\
+\midrule
+\multicolumn{10}{c}{\textit{Math \& Coding Tasks}} \\
+\midrule
+GSM8K & 2.05 & 7.05 & 60.73 & 70.28 & \underline{74.60} & 67.20 & 72.86 & 68.69 & \cellcolor{lightergray}\textbf{78.92} \\
+MATH500 & 41.00 & 7.40 & 17.60 & 25.80 & 42.60 & 40.80 & 59.60 & \underline{68.60} & \cellcolor{lightergray}\textbf{82.40} \\
+HumanEval & 6.70 & 19.50 & 52.40 & 66.50 & 68.90 & 29.90 & \textbf{77.40} & 34.80 & \cellcolor{lightergray}\underline{74.40} \\
+HumanEval+ & 5.50 & 17.40 & 46.30 & 59.80 & 62.20 & 26.20 & \textbf{70.70} & 29.30 & \cellcolor{lightergray}\underline{67.40} \\
+MBPP & 12.40 & 35.70 & 60.30 & 68.00 & 63.00 & 50.30 & \textbf{78.80} & 60.60 & \cellcolor{lightergray}\underline{73.00} \\
+MBPP+ & 10.10 & 29.10 & 50.00 & 58.50 & 54.20 & 39.70 & \textbf{65.90} & 51.10 & \cellcolor{lightergray}\underline{62.70} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{\textbf{Comparison of 2.6B \ut{} model with 3-12B parameter baselines.} The best score is \textbf{bolded}, and the second-best is \underline{underlined}. \ut{}'s column is highlighted in gray.}
+\label{tab:base-2.6B}
+\small
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}lccccccccc@{}}
+\toprule
+ & \textbf{Qwen2.5} & \textbf{Llama3.2} & \textbf{Qwen3} & \textbf{Gemma3} & \textbf{Qwen2.5} & \textbf{Llama3.1} & \textbf{Qwen3} & \textbf{Gemma3} & \cellcolor{lightergray}\textbf{Ouro} \\
+ & \textbf{3B} & \textbf{3B} & \textbf{4B} & \textbf{4B} & \textbf{7B} & \textbf{8B} & \textbf{8B} & \textbf{12B} & \cellcolor{lightergray}\textbf{2.6B R4} \\
+\midrule
+Architecture & Dense & Dense & Dense & Dense & Dense & Dense & Dense & Dense & \cellcolor{lightergray}\ut{}\\
+\# Total Params & 3.0B & 3.0B & 4.0B & 4.0B & 7.0B & 8.0B & 8.0B & 12.0B & \cellcolor{lightergray}2.6B\\
+\# Trained Tokens & 18T & 9T & 36T & 4T & 18T & 15T & 36T & 12T & \cellcolor{lightergray}7.7T\\
+\midrule
+\multicolumn{10}{c}{\textit{General Tasks}} \\
+\midrule
+MMLU & 65.62 & 59.69 & 73.19 & 58.37 & 74.20 & 73.02 & \textbf{76.63} & 72.14 & \cellcolor{lightergray}\underline{74.60} \\
+MMLU-Pro & 37.87 & 33.34 & 51.40 & 34.61 & 43.55 & 43.24 & \underline{53.72} & 49.21 & \cellcolor{lightergray}\textbf{55.73} \\
+BBH & 55.37 & 39.45 & 71.14 & 66.32 & 53.72 & 71.56 & \underline{77.65} & 78.41 & \cellcolor{lightergray}\textbf{80.46} \\
+ARC-C & 55.46 & 52.47 & 63.65 & 60.75 & 63.65 & 60.75 & 66.10 & \textbf{72.44} & \cellcolor{lightergray}\underline{66.40} \\
+HellaSwag & 74.54 & 73.09 & 75.66 & 75.58 & 79.98 & \underline{81.97} & 79.60 & \textbf{83.68} & \cellcolor{lightergray}79.69 \\
+Winogrande & 70.17 & 69.14 & 71.19 & 71.27 & 76.48 & \underline{77.11} & 76.80 & \textbf{77.74} & \cellcolor{lightergray}75.85 \\
+\midrule
+\multicolumn{10}{c}{\textit{Math \& Coding Tasks}} \\
+\midrule
+GSM8K & 74.60 & 67.20 & 72.86 & 68.69 & 81.50 & 78.17 & \textbf{83.09} & 77.18 & \cellcolor{lightergray}\underline{81.58} \\
+MATH500 & 42.60 & 40.80 & 59.60 & 68.60 & 61.20 & 52.90 & 62.30 & \underline{83.20} & \cellcolor{lightergray}\textbf{90.85} \\
+HumanEval & 68.90 & 29.90 & 77.70 & 34.80 & 79.30 & 38.40 & \textbf{84.80} & 46.30 & \cellcolor{lightergray}\underline{78.70} \\
+HumanEval+ & 62.20 & 26.20 & 70.70 & 29.30 & 70.60 & 31.10 & \textbf{75.30} & 37.20 & \cellcolor{lightergray}\underline{70.70} \\
+MBPP & 63.00 & 50.30 & 78.80 & 60.60 & 73.80 & 62.40 & \underline{79.00} & 73.50 & \cellcolor{lightergray}\textbf{80.40} \\
+MBPP+ & 54.20 & 39.70 & 65.90 & 51.10 & 63.50 & 51.60 & \textbf{67.90} & \underline{66.10} & \cellcolor{lightergray}\underline{66.60} \\
+\bottomrule
+\end{tabular}
+\end{table}
+\paragraph{Summary of Evaluation Results}
+Based on the overall evaluation results, we highlight key conclusions about our base models:
+\begin{enumerate}[label=(\arabic*)]
+\item Our 1.4B parameter Ouro model (with 4 recurrent steps) achieves performance comparable to the 4B Qwen3-Base across most benchmarks. Notably, it matches or exceeds the 4B model on challenging reasoning tasks such as BBH (71.02 vs 71.14) and GSM8K (78.92 vs 72.86).
+
+\item The 2.6B parameter Ouro model outperforms dense models up to 8B parameters on reasoning-intensive benchmarks. It achieves 80.46 on BBH and 55.73 on MMLU-Pro, surpassing the 8B Qwen3-Base (77.65 and 48.25 respectively).
+
+\item The recurrent architecture shows particular strength on tasks requiring multi-step reasoning and knowledge manipulation, with the most pronounced gains observed on MMLU-Pro, BBH, and GSM8K benchmarks, validating our hypothesis that iterative computation enhances reasoning capabilities.
+\end{enumerate}
+
+% Benchmark descriptions
+
+
+\subsection{Reasoning Model Evaluation}
+We evaluate the reasoning capabilities of our Ouro reasoning models (\textbf{Ouro-Thinking}) on challenging mathematical and scientific benchmarks that require multi-step problem solving and deep reasoning. The evaluation includes AIME 2024/2025 (American Invitational Mathematics Examination), OlympiadBench, GPQA, SuperGPQA, BeyondAIME, and HLE, representing some of the most challenging reasoning tasks in the field.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/reasoning_benchmark.pdf}
+  \caption{\textbf{Performance on advanced reasoning benchmarks.} Ouro-Thinking models compared with strong baselines such as Qwen3 and DeepSeek-Distill. \textbf{Ouro-1.4B} is competitive with 4B models, and \textbf{Ouro-2.6B} matches or exceeds 8B models across multiple math and science datasets.}
+  \label{fig:reasoning_benchmark}
+\end{figure}
+
+\paragraph{Benchmarks.}
+\begin{itemize}
+  \item \textbf{AIME 2024/2025}~\cite{HuggingFaceH4_2024_AIME2024}. 30 questions per year from AIME I and II; integer answers 0--999.
+  \item \textbf{OlympiadBench}~\cite{He2024OlympiadBench}. Olympiad-level bilingual scientific problems; supports images for multimodal inputs.
+  \item \textbf{GPQA}~\cite{rein2023gpqa}. 448 graduate-level multiple-choice questions in biology, physics, and chemistry; search-resistant design.
+  \item \textbf{SuperGPQA}~\cite{MAPTeam2025SuperGPQA}. GPQA scaled to about 285 graduate disciplines; curated to remain challenging.
+  \item \textbf{BeyondAIME}~\cite{ByteDanceSeed_2025_BeyondAIME}. Hard integer-answer math beyond AIME; emphasizes contamination resistance.
+  \item \textbf{HLE}~\cite{Phan2025HLE}. Multi-disciplinary closed-ended benchmark; expert-written with public splits and a private test set.
+\end{itemize}
+
+\paragraph{Models compared.}
+We report results for Ouro-1.4B-Thinking and Ouro-2.6B-Thinking, which are \ut{}-based looped language models with iterative depth and early exit. As baselines we include Qwen3-1.7B, Qwen3-4B, Qwen3-8B, DeepSeek-Distill-Qwen-1.5B, and DeepSeek-Distill-Qwen-7B. We use size-matched baselines whenever available, otherwise we compare to the next larger widely used model.
+
+\paragraph{Evaluation protocol.}
+All systems are evaluated with a single in-house harness and identical prompting. We adopt an LLM-as-judge protocol across benchmarks with a fixed rubric and tie-breaking policy. Unless otherwise noted, decoding uses \texttt{temperature = 1.0} and \texttt{top\_p = 0.7} for every model.
+
+
+
+\paragraph{Evaluation results.}
+Figure~\ref{fig:reasoning_benchmark} summarizes outcomes. Iterative reasoning in the \ut{} architecture provides consistent gains on these tasks. The 1.4B Ouro model reaches 71.55 on OlympiadBench (vs. 73.18 for Qwen3-4B) and 34.0 on BeyondAIME (vs. 31.0 for Qwen3-4B). The 2.6B variant scores 76.44 on OlympiadBench (vs. 75.25 for Qwen3-8B) and 39.0 on BeyondAIME (vs. 38.0 for Qwen3-8B).
+
+\subsection{Performance by Recurrent Depth and Extrapolation}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Performance of the Ouro 1.4B base model across different recurrent steps (C-QA is CommonsenseQA~\cite{talmor-etal-2019-commonsenseqa}). Steps 5-8 represent extrapolation, as the model was trained with a maximum of 4 steps. Performance peaks at the trained depth ($T=4$) and then degrades.}
+\label{tab:extrapolation_base_1_4b}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{UT Step} & \textbf{ARC-C} & \textbf{ARC-E} & \textbf{C-QA} & \textbf{HellaSwag} & \textbf{MMLU} & \textbf{Winogrande} \\
+& (25-shot) & (8-shot) & (10-shot) & (10-shot) & (5-shot avg) & (5-shot) \\
+\midrule
+1 & 37.63 & 63.85 & 44.64 & 55.24 & 41.21 & 56.99 \\
+2 & 54.86 & 80.30 & 67.98 & 71.15 & 60.43 & 66.69 \\
+3 & 59.47 & 83.33 & 74.37 & 74.07 & 66.71 & 71.35 \\
+4 & \textbf{60.92} & \textbf{83.96} & \textbf{75.43} & \textbf{74.29} & \textbf{67.45} & \textbf{72.30} \\
+\midrule[0.8pt]
+\multicolumn{7}{l}{\textit{Extrapolation (Trained on T=4)}} \\
+\midrule
+5 & 58.96 & 82.91 & 75.35 & 73.72 & 66.64 & 70.32 \\
+6 & 59.73 & 82.58 & 74.94 & 72.77 & 65.77 & 71.03 \\
+7 & 58.96 & 81.99 & 74.28 & 72.35 & 65.28 & 70.09 \\
+8 & 58.19 & 82.07 & 73.55 & 71.60 & 64.49 & 69.30 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Performance of the Ouro 2.6B base model across different recurrent steps (C-QA is CommonsenseQA~\cite{talmor-etal-2019-commonsenseqa}). Steps 5-8 represent extrapolation, as the model was trained with a maximum of 4 steps. Performance is strongest around the trained depth ($T=4$) and shows varied degradation patterns during extrapolation.}
+\label{tab:extrapolation_base_2_6b}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{UT Step} & \textbf{ARC-C} & \textbf{ARC-E} & \textbf{C-QA} & \textbf{HellaSwag} & \textbf{MMLU} & \textbf{Winogrande} \\
+& (25-shot) & (8-shot) & (10-shot) & (10-shot) & (5-shot avg) & (5-shot) \\
+\midrule
+1 & 47.95 & 72.39 & 57.58 & 68.94 & 51.55 & 61.48 \\
+2 & 62.37 & 85.23 & 76.90 & 77.61 & 67.63 & 70.48 \\
+3 & 65.36 & 87.33 & 79.77 & 79.12 & 73.57 & 74.35 \\
+4 & \textbf{66.38} & \textbf{86.95} & \textbf{81.65} & \textbf{79.56} & \textbf{74.60} & \textbf{75.53} \\
+\midrule[0.8pt]
+\multicolumn{7}{l}{\textit{Extrapolation (Trained on T=4)}} \\
+\midrule
+5 & 65.36 & 86.83 & 81.24 & 79.57 & 74.43 & 75.93 \\
+6 & 65.02 & 86.74 & 81.08 & 79.63 & 73.79 & 75.37 \\
+7 & 65.44 & 86.57 & 80.75 & 79.59 & 72.92 & 75.77 \\
+8 & 64.76 & 86.49 & 81.08 & 79.50 & 72.24 & 74.59 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+We analyze the Ouro model's performance as a function of its recurrent computational depth. Our models were trained with a maximum of 4 recurrent steps ($T=4$). Tables~\ref{tab:extrapolation_base_1_4b} and \ref{tab:extrapolation_base_2_6b} present the performance of the Ouro 1.4B and 2.6B base models, respectively, evaluated at depths from $T=1$ to $T=8$.
+
+For both models, performance on standard benchmarks (e.g., MMLU, ARC-C) generally improves up to the trained depth of $T=4$. Steps $T=5$ through $T=8$ represent extrapolation beyond the training configuration. As shown in both tables, benchmark performance sees a moderate degradation when extrapolating, with a noticeable drop compared to the peak at $T=4$.
+
+However, this degradation in task-specific performance contrasts sharply with the model's safety alignment. As detailed in \Cref{sec:safety}, the model's safety improves as the number of recurrent steps increases, even into the extrapolated regime ($T>4$). This suggests that while the model's fine-grained knowledge for benchmarks may falter beyond its training depth, the iterative refinement process continues to enhance its safety alignment.
+
+
+
+\subsection{Early Exit and Adaptive Computation Efficiency}
+
+A defining advantage of the \ut{} architecture lies in its capacity for adaptive computation allocation. Unlike standard transformers with fixed computational budgets, our model can dynamically adjust the number of recurrent steps based on input complexity. This section investigates various strategies for implementing adaptive early exit, comparing their effectiveness in balancing computational efficiency with task performance.
+
+\subsubsection{Early Exit Strategies}
+
+We explore three distinct approaches to determining when the model should terminate its iterative computation and produce the final output.
+
+\paragraph{Baseline: Static Exit.}
+The simplest strategy forces the model to exit at a predetermined recurrent step, regardless of the input characteristics. While this approach provides predictable computational costs, it fails to leverage the model's potential for adaptive resource allocation. We evaluate static exit at steps 1 through 4 to establish performance bounds and understand the relationship between computational depth and accuracy.
+\begin{wrapfigure}{r}{0.5\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/recurrent_depth_strategy.pdf}
+    \caption{\textbf{Comparison of early exit strategies on MMLU.} We evaluate four approaches across different average exit rounds: static baseline (red triangle), hidden state difference threshold (green squares), Ponder gate from standard pretraining (blue circles), and Ponder gate with specialized adaptive exit training from Section~\ref{ut:adaptive_exit} (orange diamonds). }
+    \label{fig:early_exit_comparison}
+    \vspace{-1.2cm}
+\end{wrapfigure}
+
+\paragraph{Hidden State Difference Threshold.}
+This heuristic-based approach monitors the magnitude of representational changes between consecutive recurrent steps. At each step $t$, we compute $\Delta h_t = \|h_t - h_{t-1}\|_2$ and trigger early exit when $\Delta h_t < \epsilon$ for some threshold $\epsilon$. 
+
+
+\paragraph{Learned Gating with Q-Exit Criterion.}
+Our primary approach employs the learned exit gate described in Section 3, which produces step-wise halting probabilities $\lambda_t$ based on the model's current hidden states. During inference, we apply the Q-exit criterion: at each step $t$, we compute the cumulative distribution function $\text{CDF}(t) = \sum_{i=1}^{t} p(i|x)$ and exit when $\text{CDF}(t)$ exceeds the threshold $q \in [0,1]$. The threshold $q$ serves as a deployment-time hyperparameter that controls the compute-accuracy trade-off without requiring model retraining.
+
+We evaluate this strategy under two training configurations. The \textit{untrained} configuration uses the gate as trained during our standard pretraining pipeline with the entropy-regularized objective (uniform prior KL loss) described in Sections 3.1-3.2. This represents the gate's behavior when jointly optimized with language modeling throughout Stages 1-4. The \textit{trained} configuration additionally applies the specialized adaptive exit loss described in Section~\ref{ut:adaptive_exit}, which explicitly teaches the gate to base stopping decisions on observed task loss improvements.
+
+
+
+\paragraph{Experimental Results.}
+Figure~\ref{fig:early_exit_comparison} presents the accuracy-efficiency trade-off curves for all strategies on the MMLU benchmark. By varying the exit threshold (or static exit step for baseline), we obtain multiple operating points for each method, enabling direct comparison at equivalent computational budgets measured by average exit round.
+
+Several key findings emerge from this analysis. First, the Ponder gate with specialized adaptive exit training  achieves the best accuracy at every computational budget, demonstrating that the loss improvement-based training signal described in Section~\ref{ut:adaptive_exit} provides clear benefits over standard entropy regularization. At an average exit round of 2.5, the specialized training reaches 66\% accuracy while the standard gate achieves approximately 64\%.
+
+Second, even without specialized training, the Ponder gate from standard pretraining substantially outperforms the static baseline, validating that the entropy-regularized objective with uniform prior successfully enables adaptive computation. The gate learns to differentiate input difficulty through the general training dynamics, though it lacks the explicit supervision to correlate stopping decisions with actual performance improvements. This demonstrates that our base training approach already captures useful signals for resource allocation.
+
+Third, the hidden state difference threshold strategy performs surprisingly competitively, closely tracking both gate configurations. At moderate computational budgets (2-3 average rounds), it achieves accuracy within 1\%-2\% of the specialized trained gate, suggesting that representation stability provides a reasonable proxy for computational convergence. However, the consistently superior performance of the specialized trained gate across all operating points confirms that explicit supervision via the adaptive exit loss captures information beyond what can be inferred from representational dynamics alone.
+
+Fourth, comparing the untrained  and trained gate configurations reveals the value proposition of the specialized training procedure. The gap between these curves, approximately 2\%-3\% accuracy at most operating points, represents the benefit of teaching the gate to explicitly monitor task loss improvements $I^{(n)}_t$ rather than relying solely on entropy regularization to discover stopping policies. This empirical result validates our design choice to introduce the adaptive exit loss as a specialized training objective.
+
+Finally, the baseline's monotonic improvement from 1 to 4 rounds confirms the ``deeper is better'' property while revealing diminishing returns. The dramatic jump from 1.0 to 2 rounds (40\% to 60\% accuracy) contrasts with the marginal gain from 3 to 4 rounds (67.35\% accuracy). This pattern explains why adaptive methods prove effective: most examples achieve near-maximal performance at intermediate depths, with only a minority requiring full computational depth. 
+
+\subsubsection{KV Cache Sharing for Inference Efficiency}
+
+The recurrent nature of our architecture introduces a challenge: naively, each recurrent step requires maintaining its own KV cache, leading to 4$\times$ memory overhead for our 4-step model. We investigate strategies to reduce this overhead through KV cache reuse.
+
+\paragraph{Prefilling Phase}
+During the prefilling phase (processing the input prompt), we find that all four recurrent steps require their own KV caches, as each step transforms the representations in ways that cannot be approximated by earlier steps. Attempting to reuse KV caches during prefilling leads to performance degradation (>10 points on GSM8K).
+
+\paragraph{Decoding Phase}
+However, during the decoding phase (auto-regressive generation), we discover that KV cache reuse becomes viable. We explore two strategies:
+
+\begin{enumerate}
+    \item \textbf{Last-step reuse}: Only maintain KV cache from the final (4th) recurrent step
+    \item   \textbf{First-step reuse}: Only maintain KV cache from the first (1st) recurrent step. 
+    \item \textbf{Averaged reuse}: Maintain an averaged KV cache across all four steps
+   
+\end{enumerate}
+
+\begin{table}[htbp]
+\centering
+\caption{KV cache sharing strategies during decoding. Both last-step and averaged strategies achieve minimal performance loss while reducing memory by 4$\times$.}
+\label{tab:kv_cache}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Strategy} & \textbf{GSM8K} & \textbf{MATH-500} & \textbf{Memory Reduction}  \\
+\midrule
+Full (4$\times$ cache) & 78.92 & 82.40 & 1.00$\times$  \\
+First-step only & 18.73 & 8.43 & 4.00$\times$  \\
+Last-step only & 78.85 & 80.40 & 4.00$\times$  \\
+Averaged & 78.73 & 78.52 & 4.00$\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+As shown in Table~\ref{tab:kv_cache}, these strategies yield dramatically different outcomes. Reusing only the first step's cache results in a catastrophic performance collapse (e.g., 18.73 on GSM8K, down from 78.92), indicating that the initial representations are insufficient for subsequent decoding steps. In contrast, both the last-step and averaged reuse strategies achieve nearly identical performance (within 0.3 points on GSM8K) to the full cache baseline, while successfully reducing memory requirements by 4×. The last-step strategy performs slightly better than the averaged approach on MATH-500, suggesting that the final recurrent step's representations are most informative for subsequent token generation. This finding enables practical deployment of \ut{} models with memory footprints comparable to standard transformers of similar parameter count.
+
+\section{Understanding \ut{}s Superiority from a Parametric Knowledge Viewpoint}
+\label{sec:understanding_ut}
+Why \ut{}s achieve far better performance when the parameter counts do not increase? Although potential enhanced reasoning capabilities were observed in \cite{saunshi2025reasoning}, the source of the advantage remains unclear. Specifically, do \ut{}s perform better due to the models' increased \textbf{knowledge capacity} with the same size of parameters? Or do they have a better capability in \textbf{extracting and composing the knowledge} encoded within the parameters? Toward understanding the improvement of the phenomenon, we explore what capabilities are exactly enhanced by simply looping more times. 
+In this section, we perform experiments to test the model's abilities to \textit{memorize} factual knowledge in its parameters, and the capabilities of \textit{manipulating and composing} existing knowledge encoded in the parameters based on a set of fully controllable synthetic tasks in \cite{AL2024-knowledge3,Allenzhu2025-canon,yao2025language}.
+
+% \paragraph{Takeaway.}
+% UTs (looped Transformers) do not increase \emph{knowledge capacity} at a fixed parameter count, but they strongly bias learning toward \emph{knowledge manipulation} by enabling iterative computation with shared weights, which we believe is the key component of \textit{reasoning}.
+
+\subsection{\ut{}s does not increase knowledge capacity}
+\label{subsec:capacity}
+
+We first explore the \textit{knowledge capacity}, i.e. the model's storage capacity of facts in the parameters. We aim to answer the first question: do \ut{}s achieve better performance by \textbf{memorizing knowledge} when the parameter count is not increased?
+
+\textbf{Settings.} Following the Capo task setting in Physics of language models \cite{AL2024-knowledge3,Allenzhu2025-canon}, we construct synthetic biographies to test \textbf{how much information the model memorizes}. 
+Specifically, we generate several synthetic biographic datasets $\operatorname{bioS}(N)$ with different number of people $N$, and train a series of language models to memorize the information contained in the dataset. Each biography contains the individual's name and five attributes $a_1,a_2,...,a_5$ of the person: gender, birth date, university, major, and employer. The names $n$ and the attributes $a_i$ are randomly selected from a pre-defined set $\mathcal{N}$ and $\mathcal{A}_i$ and combined together as a biography using a random template. Based on the random generation process, we have an information-theoretic lower bound for the model in the minimum bits required to encode all the names and attributes. To check whether the models memorize the biographic information accurately, we look at the probability of predicting the ground-truth attributes with the trained models given the biography context.  
+Calculating the sum of cross-entropy loss on each attribute token positions, we can estimate how much information (estimated in bits) has already been memorized in the trained language model, which is our \textbf{knowledge capacity} metric. 
+
+With this metric, we can compare the knowledge capacity between the original model (with only one recurrent step) and the looped model (with 4 recurrent steps) with the same parameter count to investigate whether looping increases knowledge capacity. Moreover, as larger models should encode more information than smaller models, we also aim to investigate whether looped models have a better scaling effect when the size of the model grows. 
+We thereby trained GPT-2 style models of different parameter numbers ranging from 1M to 40M (with depth and hidden dimension varied) and measured the number of bits of knowledge learned by each model. We trained on $\operatorname{bioS}(N)$ with $N$ ranging from 20K to 500K individuals for 1000 exposures. More training details are provided in \Cref{appendix:capo}.
+
+\textbf{Results.} The results are visualized in the plot ``bits vs. \# of parameters'', where we can observe the comparison between iso-parameter looped and non-looped models. Our results are shown in \Cref{fig:knowledge_capacity_and_mano} (Left): \textbf{looping does not increase \textit{knowledge capacity} nor improve capacity scaling}. Models with and without loops all attain around a similar capacity ratio $\approx 2$ bits/parameter. Therefore, the number of parameters itself can be seen as a direct indicator of knowledge capacity, and \textbf{merely increasing looping does not help enhance knowledge capacity itself}.
+
+% \textit{Remark.} \zixuan{Might be an indicator that quantization is quite independent of the looping technique. --- @ Ridger's comment. 4-bit doesn't work well. Should try 8-bit.}
+
+\begin{figure}[t]
+\centering
+\setlength{\tabcolsep}{6pt}
+\vspace{-3pt}
+\begin{minipage}[t]{0.5\textwidth}
+\vspace{-3pt} % <— ensures true top alignment
+\small
+\centering\hspace{-2pt}
+\includegraphics[width=\linewidth]{figures/knowledge_scaling.pdf}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.44\textwidth}
+\vspace{-3pt} % <— ensures true top alignment
+\centering
+\small
+\rowcolors{3}{white}{white} % keep body rows white
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{} & \textbf{$L=10$} & \textbf{$L=16$} & \textbf{$L=24$} \\
+\rowcolor{gray!15}\multicolumn{4}{c}{\textbf{Baseline model}}\\
+\midrule
+Base $(12 \otimes 1)$ & 93.6 & 94.4&34.8  \\
+\midrule
+\rowcolor{gray!15}\multicolumn{4}{c}{\textbf{2 layer model}}\\
+Base $(2 \otimes 1)$ &21.5 & 8.4& 7.5 \\
+Loop $(2 \otimes 6)$ & \textbf{98.1}& \textbf{96.3} &78.0  \\
+\midrule
+\rowcolor{gray!15}\multicolumn{4}{c}{\textbf{3 layer model}}\\
+Base $(3 \otimes 1)$ &75.4 & 29.8& 11.0 \\
+Loop $(3 \otimes 4)$ & \textbf{97.9}& \textbf{95.8} &\textbf{92.2}  \\
+\midrule
+\rowcolor{gray!15}\multicolumn{4}{c}{\textbf{6 layer model}}\\
+Base $(6 \otimes 1)$ & 84.7 &59.5 & 20.0\\
+Loop $(6 \otimes 2)$ & 93.4 &88.5 & 35.1\\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\caption{\textbf{Left.} We trained both \ut{} and a standard trasnformer baseline with the same parameters on Capo task to compare the knowledge capacity gain by looping more times. With the same parameter count, the looped model and its non-looped baseline has almost the same knowledge capacity measured in bits of knowledge on Capo task. 
+\textbf{Right.}  Accuracy of looped/non-looped models on Mano task. Looped models are better than the iso-param $(\{2,3,6\} \otimes 1)$ models. They also achieve better or comparable performance comparing to the iso-flop baseline $(12 \otimes 1)$ model.}
+\label{fig:knowledge_capacity_and_mano}
+\end{figure}
+
+\subsection{\ut{}s prevails in knowledge manipulation}
+\label{subsec:manipulation}
+We have already shown that reusing parameters cannot help the model memorize more atomic factual knowledge. However, natural language is not only about single-hop factual knowledge. In most of the scenarios, predicting the next token requires combining different piece of knowledge, which we called \textbf{knowledge manipulation} \cite{AL2024-knowledge3}. \textit{Does looping and reusing parameters help \ut{}s in tasks that require \textbf{flexible usage of knowledge}?} We further consider two synthetic tasks to investigate the hypothesis on {{knowledge manipulation}} capacity: the synthetic Mano task in \cite{Allenzhu2025-canon} based on modular arithmetic, and a multi-hop QA task in natural language \cite{yao2025language} composing individual facts. 
+
+\textbf{Mano Task.} We first explore the knowledge manipulation task Mano in \cite{Allenzhu2025-canon}, based on a complex tree structure with restricted modular arithmetic knowledge. Models need to solve the task without intermediate thinking process. As illustration, an example could be \texttt{<bos> + * a b c <eos>} requires the model to directly output $(a*b)+c$ mod 23. To solve this task, the model needs to (1) apply the arithmetic rules modulo 23 as the factual knowledge encoded in the parameters, and (2) parse the binary tree structure of the arithmetic to compose all calculations. 
+
+To evaluate the manipulation capability thoroughly, we consider the test accuracy across different difficulty levels based on maximum expression length $L$, which accounts for the number of operations in the sample. The model is trained with online samples with all possible expression lengths $\ell\in[1, L]$ and tested on the maximum expression length $L$. We prepare three levels of difficulties $L=[10, 16, 24]$ to test \ut{}'s superiority over non-looped models given fixed training budget. We train ($\{2,3,6,12\}\otimes 1$) standard transformers as the baselines and several looped models ($k\otimes 12/k$) with $k=2,3,6$. More details are included in \Cref{appendix:mano}. 
+
+The results in \Cref{fig:knowledge_capacity_and_mano} show that given the same parameters, looped models \textbf{always} outperform their non-looped counterpart for all possible $k\in\{2,3,6\}$. Even with the same number of FLOPs in the model, the looped models can often perform better. This indicates that\textbf{ \ut{} has a better inductive bias towards \textit{knowledge manipulation}}: with the same budget on training samples and computation, \ut{} can achieve comparable or even better performance after training when the task requires heavy reasoning capability (e.g. parsing the arithmetic tree) given that the required amount of knowledge (e.g. the modular arithmetic rules) is limited. 
+
+\begin{figure}[t]
+\centering
+\vspace{-5pt}
+\setlength{\tabcolsep}{6pt}
+\begin{minipage}[t]{0.48\textwidth}
+\small
+\centering
+\includegraphics[width=\linewidth]{figures/exact_match_avg_ckpt20000_vs_size.pdf}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{figures/multi_hop_steps_size6.pdf}
+\end{minipage}
+\caption{\textbf{Left.} \zixuan{TODO add explanation} We vary the number of unique training samples for models with different loops, and compare the final performance with the same training compute budget. As shown, models with more loops requires fewer samples to learn the 3-hop QA task.
+\textbf{Right.} Given the same data budget, models with more loops learn faster and achieve better performance comparing with models without loops.}
+\label{fig:multi_hop}
+\vspace{-5pt}
+\end{figure}
+
+\textbf{Multi-hop QA. } Next, we corroborate our conjecture with a natural language multi-hop reasoning task proposed in \cite{yao2025language}, based on synthetic facts on relations $\mathcal{R}$ between $|\mathcal{E}|$ different individuals, like \textit{The instructor of A is B} and \textit{The teacher of B is C}. The target is to answer multi-hop questions like \textit{`Who is the teacher of the instructor of A?'.} We aim to study whether looping enables the original transformer better learn to perform internal multi-hop reasoning in a natural language setting. Compared to the Mano task, the task requires the model to memorize more factual knowledge with layer-wise data structure, which is closer to practical natural language multi-hop reasoning.
+
+\zixuan{Add why we need to consider these two axis. Originally need exponential samples, which is hard}
+We consider \textit{sample efficiency} in learning this multi-hop knowledge manipulation task: \textit{\textbf{how many different QA pairs are necessary for the trained model to achieve 100\% accuracy?}} For simplicity, we focus on the task with 3-hop QA pairs. We separate all possible QA pairs into training subsets of different sizes, and compare when each model perfectly generalizes on the leave-out test set.
+Similarly to the Mano task, we train a standard ($6\otimes1$) transformer as the baseline, and compare it with looped models ($6\otimes \{2,3,4\}$) to study the effect of the universal transformer. We also train an iso-flop model ($24\otimes 1$) for comparison. More details are included in \Cref{appendix:multihop}.\zixuan{Add in appendix} 
+
+
+The results in \Cref{fig:multi_hop} show that looped models generally learn the multi-hop task with fewer examples compared to both the non-looped iso-parameter model and the non-looped iso-flop model. The improved \textit{sample efficiency} on the multi-hop reasoning task further demonstrates that \ut{} has a better ability to learn to compose and manipulate atomic factual knowledge. \zixuan{Add discussion}
+
+\subsection{Why \ut{} helps knowledge manipulation: a theoretical perspective}
+\label{subsec:theory_and_discussion}
+\zixuan{Add more intuition and discussion}
+Why does \ut{} naturally bias towards better manipulation of the knowledge encoded in the parameter space? We conjecture that the reason lies in the inherent recurrence structure of \ut{}. Given that the knowledge capacity is limited by the parameter counts, looping enables \ut{} to better utilize the knowledge encoded in the parameters.
+\ut{} can reuse the knowledge in each looped block, \textbf{retrieve} new necessary factual information, or apply \textbf{structured procedures} to obtain the final prediction.
+
+\textbf{Search on the parametric knowledge graph.} During pretraining, language models often obtain an enormous amount of factual knowledge and learn analysis procedures with a rather shallow thinking depth. To perform more challenging tasks, the model needs to use multiple pieces of knowledge in the parameter space, which requires the model to search in-depth in the knowledge graph with directional dependencies formed by the atomic facts or knowledge. \ut{} naturally support an efficient reuse of the knowledge and algorithms stored in the parameter spaces: even though the knowledge piece is not retrieved or used in the previous calculations, the recurrent structure enables \ut{} to redo the procedure and extract necessary information.
+
+We consider the extensively studied search problem in the literature of \textbf{latent reasoning} \cite{hao2024training, zhu2025reasoning, zhong2025understanding}: \textit{graph reachability} on a knowledge graph. Here, we consider that only part of the knowledge graph $G_{\text{ctx}}$ is included in the context, and most of the knowledge relations $G$ must be encoded in the parameters. The model must learn to compose the context knowledge $G_{\text{ctx}}$ and the learned knowledge $G$. Compared to traditional CoT and recent proposed latent CoT \cite{zhu2025reasoning, hao2024training}, we show that \ut{} is a more efficient latent reasoning paradigm requiring fewer sequential reasoning steps.
+\begin{theorem}[Informal]
+    Fix $n$ as the maximum size of the combined knowledge graph $G$. Given the adjacency matrix of the context graph $G_{\text{ctx}}$ and a query pair $(s,t)$, there exists a one-layer transformer independent of $G_{\text{ctx}}$ with loops $O(\log_2 D)$ times that checks whether there exists a path from $s$ to $t$ in the combined knowledge graph $(G+G_{\text{ctx}})$, where $D$ is the diameter of $(G+G_{\text{ctx}})$.
+    \label{thm:ut_graph_connectivity}
+\end{theorem}
+\begin{table*}[ht]
+\centering
+    \vspace{-7pt}
+    \begin{tabular}{@{}cl|cccc@{}}
+        \toprule
+        &\textbf{Latent reasoning method} & {Discrete CoT} & Continuous CoT & Universal Transformer \\
+        \midrule
+        &\textbf{Sequential computation steps} & {$O(n^2)$} & {$O(D)$} & {$O(\log D)$} \\
+        \bottomrule
+    \end{tabular}
+\end{table*}
+
+The proof and the discussion on \ut{}'s efficiency are deferred to \Cref{appendix:theory}. We claim that the universal transformers maximize the parallelism in exploring all-pair connectivity and reduce the sequential computation steps exponentially from $O(n^2)$ to $O(\log D)$, making the latent reasoning much more efficient than the traditional CoT view of looping \cite{saunshi2025reasoning} and continuous CoT \cite{zhu2025reasoning}. The potential efficient latent reasoning ability may account for the superiority of \ut{} in knowledge manipulation, which also may contribute to the superior performance in reasoning-heavy tasks.
+
+\textit{Remark (Sample efficiency). } The expressiveness result of \ut{} does not explain why the transformers with loops often learns knowledge manipulation tasks with samples much fewer than its iso-FLOP counterpart. We conjecture that the reason lies again in the \textbf{recurrent structure} of \ut{}. Assuming the reasoning tasks require multiple manipulation and recursion using learned parametric knowledge or algorithmic procedure, the models have to learn a \textit{repeated structure} across layers of different depth. For deep transformer models without looping, they potentially have to explore a large function class where each block of parameters are not tied. The parameter-sharing layers may help the model explore a much smaller realizable hypothesis class, thus reducing the sample complexity of learning those manipulation tasks. It could be a possible statistical reason that \ut{} enjoys a better sample complexity on those reasoning/manipulation tasks.
+
+\section{Safety, Faithfulness and Consistency}
+\subsection{Safety}
+\label{sec:safety}
+We assess model safety using HEx-PHI dataset~\citep{qifine}, which contains 330 examples covering 11 prohibited categories. HEx-PHI employs GPT-4o as a judge to assign each model response a harmfulness score from 1 to 5; a higher score indicates a less safe output. Additionally, we compute the harmfulness rate, defined as the proportion of the test cases that receive the highest harmfulness score of 5.  For Ouro Base models, we use greedy decoding with max\_new\_tokens=128; For Ouro Thinking models, we sample with temperature=1.0, top\_p=0.7 with max\_new\_tokens=8192. \boyi{Do we need to mention the system prompt we are using for the thinking models?}
+We evaluate Ouro 1.4B and 2.6B models with recurrent steps ranging from 1 to 8, and report the result in \Cref{fig:ut_safety}. Notably, while our models were trained with only 4 recurrent steps, both models show its \textbf{extrapolation capability} by extending recurrence steps to 5-8 during inference. This demonstrates the model's ability to generalize to deeper computation than seen during training. 
+
+
+To further understand how increasing recurrent steps will change the model's safety alignment, we follow the same setting from Zheng et al. (2024)~\citep{zheng2024prompt}, feed the prompt-response pair generated during and perform Principal Component Analysis (PCA) on the last input tokens \boyi{WIP}
+
+
+\begin{figure}[t]
+    \centering
+     \includegraphics[width=\linewidth]{figures/ut_safety_full.pdf}
+      \caption{For both 1.4B and 2.6B models, Ouro demonstrates improved safety alignment on HEx-PHI as the \ut{} steps increase. Note that models were trained with 4 recurrent steps; evaluations at steps 5-8 demonstrate successful extrapolation beyond the training configuration.}
+      \label{fig:ut_safety}
+\end{figure}
+
+
+
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/ut_pca_hexphi_1.4B.pdf}
+        \caption{Ouro 1.4B}
+    \label{fig:ut_pca_hexphi_1.4B}
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/ut_pca_hexphi_2.6B.pdf}
+    \caption{Ouro 2.6B}
+    \label{fig:ut_pca_hexphi_2.6B}
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/ut_pca_hexphi_1.4B_thinking.pdf}
+    \caption{Ouro 1.4B Thinking}
+    \label{fig:ut_pca_hexphi_1.4B_thinking}
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/ut_pca_hexphi_2.6B_thinking.pdf}
+    \caption{Ouro 2.6B Thinking}
+    \label{fig:ut_pca_hexphi_2.6B_thinking}
+    \end{subfigure}
+    \caption{We perform PCA analysis on the last input token's hidden representation output by the top model layer.\boyi{TODO: explain the meaning of the color scale and the meaning of the crosses and dots.}}
+    \label{fig:pca_hex_phi}
+    
+\end{figure}
+
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/linear_probing.pdf}
+    \caption{\textbf{ROCAUC of linear probes by layer on Quora Question Pairs.} Each colored curve shows a probe trained on hidden states within a given 2 to 8 recurrent steps to predict that loop’s answer; Qwen3-4B is a baseline. Vertical dotted lines mark loop boundaries. In recurrent step $i=2,3,4$, the ROC AUC rises quickly within a recurrent step, then partially resets at the next loop, indicating that intra-step answers are determined early while cross-step updates modify the provisional answer.}
+    \label{fig:linear_probing}
+\end{figure}
+
+\subsection{Faithfulness}
+A thinking process to LLM is considered faithful if it is both procedurally correct and accurately reflects the model's actual decision process. A faithful thinking process must be causally connected to the final answer, meaning that if a justification were changed, the conclusion would also change. Many recent work including \citep{Cox2024PostHocCoT, arcuschin2025chain0of0thought, barez-chain-2025, korbak2025chain} have pointed out LLMs often decides on an answer before generating chain of thought, and often uses chain of thought to rationalize its predetermined answer. In contrast, our model's faithfulness stems from the iterative refinement of its internal latent representations. The true causal chain of reasoning is the transformation from the hidden state representation $H^1$ to $H^2$, then to $H^3$, and finally $H^4$. Each step $H^k \rightarrow H^{k+1}$ is a computationally necessary and non-removable part of the process to arrive at the final answer.
+
+The generated intermediate texts, $Text(R1)$, $Text(R2)$ and $Text(R3)$ are not themselves part of the model's internal causal path for computation. Rather, they serve as faithful snapshots of the model's understanding at each stage of reasoning. Because each intermediate representation $H^k$ is directly supervised by a language modeling objective, its projection into token space ($Text(Rk)$) is a meaningful and accurate reflection of the model's internal state at that step.
+
+We follow prior work \citep{Cox2024PostHocCoT} and use the Quora Question Pairs dataset \citep{quora_question_pairs_kaggle}. Many questions in this dataset are inherently subjective or ambiguous, and the task asks whether two questions are semantically similar without specifying an operational definition of ``similar''. If thinking tokens really play a role of ``thinking'', one would expect the answer selected by the answering prompt to diverge from the answer predicted directly from the final question token’s logits after linear probing. The referenced study reports that, in Gemma-2 9B, a linear probe on the logits perfectly predicts the final answer. We are also able to reproduce this phenomenon on Qwen-3 4B. These observations indicate that, even for ambiguous cases, the model appears to first settle on an answer and then use thinking tokens to rationalize that answer, rather than revising the answer during the thinking process.
+
+In our $1.4\mathrm{B}\times4$ model, each recurrent round contains 24 transformer layers. As shown in Figure \ref{fig:linear_probing}, we train linear probes on hidden states from layers $1$ through $24i$ to predict the answer at recurrent step $i$. We evaluate $i\in\{2,3,4\}$ to match the training scheme, and we also test $i\in\{5,6,7,8\}$ to assess extrapolated recurrent steps. Within a single recurrent step, the natural language answer is well predicted by a probe on that step’s hidden representation, indicating strong intra-step alignment. In contrast, for $i\in{2,3,4}$, a probe on the preceding representation at layer $24(i-1)$ fails to predict step-$i$ answers, which implies that each new step performs additional computation that can revise the provisional decision, and that cross-loop updates are not captured by a linear readout from earlier logits. For extrapolated recurrent steps $i\in{5,6,7,8}$, this gap is smaller, but we still do not observe the perfect predictability from layer 24 to layer 36 reported for Qwen-3 4B.
+
+We also quantify agreement across recurrent steps using the heat map $A$ in Figure \ref{fig:heatmap}. The dataset has 1,000 question pairs. Each cell ($A[i,j]$) reports the count of consistent answers between steps (i) and (j), where ``consistent” means the two steps assign the same label. For example, $H[3,4]=361$ indicates that only 361 of 1,000 step-3 answers match the step-4 answers (36.1 percent). The diagonal is 1,000 by construction, while off-diagonal cells capture disagreement. Adjacent steps never reach full agreement, which shows that answers are actively revised between recurrent steps and supports the claim that nontrivial reasoning occurs across steps rather than post hoc rationalization.
+
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figures/consistency_heatmap.pdf}
+    \caption{\textbf{Agreement across recurrent steps.} Heat map (A) over 1,000 Quora Question Pairs. Entry $A[i,j]$ is the number of items for which steps (i) and (j) assign the same label.}
+    \label{fig:heatmap}
+\end{figure}
+
+
+
+% \subsection{Consistency}
+% \tz{Need quantitative support.}
+% The inconsistency between an LLM's articulated reasoning and its final answer poses a critical barrier to robust safety implementation. Often, a model's chain-of-thought appears to align with safety guidelines, only for the final output to deviate into unsafe territory. 
+
+% \begin{quote}\scriptsize    
+% \verb|<think>...These methods operate in a gray area. I should not mention them to the user... </think>|
+% \\
+% \verb|<answer>...You can also try ... but keep in mind they are in a gray area...</answer>|
+% \end{quote}
+
+% Consider a scenario where a model's reasoning tokens explicitly advise against harmful actions, yet the answer tokens proceed to encourage such behavior with inappropriate language. This disparity makes the reasoning process an unreliable proxy for safety evaluation, pushing current solutions towards post-hoc retraction of generated content. This approach, however, is fraught with limitations, as it cannot guarantee removal of content from user-side caches or reverse outputs already delivered via API calls.
+
+% Our proposed architecture directly addresses this challenge by leveraging its inherent iterative structure. We can run text generation from an earlier, intermediate recurrent step in parallel with the final recurrent step that produces the answer. The core principle of our design, iterative refinement of a single latent representation, ensures a high degree of consistency in content and style between the outputs of preceding and final recurrent steps. This consistency establishes the intermediate output as a faithful proxy for the final answer, enabling reliable, pre-emptive safety checks before any token is streamed to the end-user.
+
+% Furthermore, the seeming computational overhead of this parallel generation can be reframed as an asset when integrated with modern inference optimization strategies like speculative decoding. In such a framework, the intermediate \ut{} output can serve as the lightweight ``draft'' model, whose outputs are verified by the final recurrent step's computation. This creates a synergistic system where the computation invested in the intermediate recurrent step contributes to both inference acceleration and proactive safety assurance. While we present this as a proof of concept, we posit that as model architectures scale, increasing the number of layers and recurrent steps, the efficiency and safety benefits of using an intermediate recurrent step output as a speculative draft and safety proxy will become increasingly pronounced.
+
+\section{Conclusion}
+
+In this work, we introduced \textbf{Ouro}, a family of Looped Language Models (\ut{}) that demonstrate a practical and highly efficient alternative to standard transformer scaling. By integrating iterative computation and adaptive depth directly into the pre-training phase, our approach shifts reasoning from a post-training, inference-time task (like CoT) to a core capability learned from 7.7T tokens of data.
+
+Our primary contribution is the empirical validation of \ut{}'s exceptional parameter efficiency at scale. We demonstrated that our 1.4B and 2.6B models consistently match or exceed the performance of standard 4B and 8B transformers, respectively, showcasing a 2-3$\times$ improvement in parameter efficiency. We traced the origin of this advantage not to increased knowledge storage—which our synthetic experiments showed remains constant—but to a fundamentally superior capability for \textbf{knowledge manipulation}. This finding is supported by our theoretical analysis, which frames the \ut{}'s iterative process as a highly efficient latent reasoning mechanism capable of solving graph reachability in $O(\log D)$ steps.
+
+We also presented a novel training objective using entropy regularization with a uniform prior, which successfully trains the model to learn adaptive computational depth. This, combined with our findings on efficient KV cache sharing during decoding, confirms that \ut{}s are not just theoretically compelling but practical for real-world deployment. Beyond performance, our work revealed unique properties of this architecture. The iterative refinement process provides a \textbf{causally faithful} reasoning trace, mitigating the post-hoc rationalization issues seen in standard CoT. Furthermore, we found that safety alignment improves with increased recurrent steps, a property that holds even when extrapolating beyond the training depth.
+
+This work opens several avenues for future research. While our scaling law analysis provides a predictable foundation, further investigation is needed to understand the complex interplay between model size, recurrent depth, and data at even larger scales. Our models, trained with $T=4$, showed performance degradation on benchmarks when extrapolating (even as safety improved); developing techniques to enhance performance extrapolation is a key next step. Finally, exploring more complex recurrent mechanisms, such as combining \ut{} with Mixture-of-Experts (MoE) or enabling token-level adaptive depth, presents a promising direction.
+
+In conclusion, Ouro establishes iterative latent computation as a critical third axis for scaling language models, complementing traditional scaling of parameters and data. In an era increasingly constrained by data availability, parameter-efficient architectures that enhance knowledge manipulation are not just a possibility, but a necessity. We release the Ouro model family as a strong baseline for this new direction of scaling.
+
+
+\section*{Acknowledgement}
+We sincerely thank Zeyuan Allen-Zhu for his in-depth discussion on the physics of language model part and his enlightening insights on knowledge manipulation. We also thank Yonghui Wu, Guang Shi, Shu Zhong, Tenglong Ao, Chen Chen, Songlin Yang, Wenhao Chai, and Yuhong Chou for their insightful discussions. Special thanks to Wenjia Zhu—his words opened our eyes to what the real problems are in current models, and inspired us to explore this direction.
+\newpage
+
+\section*{Contributions}
+
+\textbf{Project Lead}
+
+Rui-Jie Zhu$^{1,2}$, Zixuan Wang$^{1,3}$, Kai Hua$^{1}$, Ge Zhang$^{1}$
+
+\textbf{Core Contributors}
+
+Rui-Jie Zhu: Proposes the project and leads the pre-training of Ouro. Optimizes pre-training and inference infrastructure, develops the initial vLLM implementation, and explores RLVR.
+
+Zixuan Wang: Leads the theoretical analysis of \ut{} superiority, developing the "Physics of Language Models" framework for this work. Conducts experiments on knowledge capacity and manipulation and provides theoretical proofs for latent reasoning efficiency.
+
+Kai Hua: Curates and designs all pre-training data mixtures and provides key insights during the pre-training process.
+
+Ge Zhang: Co-leads and supervises the Ouro. Provides several key insights during the pre-training and post-training process.
+
+Tianyu Zhang: Leads the investigation into model safety, faithfulness, and consistency. Analyzes safety alignment, explores the faithfulness of the latent reasoning process, and evaluates cross-step answer consistency.
+
+Ziniu Li: Leads the post-training phase, executing supervised fine-tuning and providing key contributions to RLVR exploration.
+
+Haoran Que: Leads the scaling law analysis for \ut{}, investigating the relationship between performance, model size, and recurrent depth.
+
+Boyi Wei: Contributes to the safety analysis, conducting evaluations on the HEx-PHI benchmark and performing PCA on model representations.
+
+Fan Yin: Optimizes the vLLM and SGLang implementations for Ouro, contributing core pull requests to improve inference efficiency.
+
+Zixin Wen: Contributes to the theoretical analysis and the Physics of LLMs experiments.
+
+He Xing: Contributes to the vLLM infrastructure development and optimization.
+
+\textbf{Contributors}
+
+Lu Li, Jiajun Shi, Kaijing Ma, Shanda Li, Taylor Kergan, Andrew Smith, Xingwei Qu, Mude Hui, Bohong Wu, Xun Zhou, Qiyang Min, Hongzhi Huang, Tianle Cai, Wei Ye, Jiaheng Liu, Jian Yang, Yunfeng Shi, Chenghua Lin, Enduo Zhao
+
+\textbf{Supervision}
+
+Ge Zhang, Wenhao Huang, Yoshua Bengio, Jason Eshraghian
+
+
+\bibliographystyle{unsrt}
+\bibliography{main}
+
+\newpage
+\appendix
+\section{Empirical Validation of Prior Choice}
+\label{app:prior_empirical}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{figures/geo_vs_uni.pdf}
+    \vspace{-0.6em}
+    \caption{\textbf{Effect of the prior over exit steps.} 
+    \emph{Left:} training loss (300-step sliding average) for a \ut{} with $T_{\max}=4$ under different priors on $z$. 
+    Colored curves correspond to geometric priors with parameter $\lambda\in\{0.1,\dots,0.9\}$; the red curve uses a uniform prior. 
+    Shaded regions indicate variability across runs. 
+    \emph{Right:} prior probability over \ut{} steps induced by each $\lambda$ (uniform shown in red). 
+    Stronger geometric bias (larger $\lambda$) concentrates mass on shallow steps, reducing credit assignment to deeper computation.}
+    \label{fig:prior_loss}
+\end{figure}
+
+\paragraph{Experimental setup.}
+Unless otherwise noted, we keep the model, data, optimizer, and schedule identical across conditions and \emph{only} change the prior $\pi$ used in the KL term of the loss.
+All results are obtained on a 776M-parameter \ut{} with $T_{\max}=4$ recurrent steps.
+Training is performed on the FineWeb-Edu corpus~\cite{penedo2024fineweb} for a total of 20B tokens with a global batch of 50K tokens per optimization step, i.e., roughly 40K steps in total.%
+\footnote{The loss curves plot a 300-step sliding average over the training trajectory.}
+For geometric priors we sweep $\lambda\!\in\!\{0.1,0.2,\dots,0.9\}$; the uniform prior assigns equal mass to all steps.
+To assess variability, we repeat each condition with multiple random seeds; shaded areas in \Cref{fig:prior_loss} denote the variability across runs.
+All other hyperparameters follow our training recipe, keeping $\beta$ fixed across prior choices.
+
+\paragraph{Convergence and final loss.}
+As shown on the left of \Cref{fig:prior_loss}, the uniform prior consistently achieves lower training loss and cleaner convergence on the 776M \ut{}.
+Geometric priors plateau higher, with the gap widening as $\lambda$ grows (i.e., stronger bias toward early exit), reflecting weaker supervision for deeper iterations.
+
+\paragraph{Stability and exploration.}
+Geometric priors exhibit larger late-training oscillations, consistent with premature collapse of $q_\phi(z\!\mid\!x)$ onto shallow steps and reduced entropy.
+The uniform prior imposes no structural depth preference, so the KL term behaves as pure entropy regularization: exploration is maintained longer, and the model can allocate probability mass across multiple depths until it has learned which examples benefit from deeper computation.
+
+\paragraph{Depth utilization.}
+The right panel of \Cref{fig:prior_loss} visualizes the priors.
+Large-$\lambda$ geometric priors concentrate mass at $t{=}1$--$2$, starving deeper steps ($t{\ge}3$) of credit assignment; this undermines the ``deeper is better'' property.
+With a uniform prior, all depths receive comparable signal, enabling later iterations to specialize and deliver higher accuracy when maximum depth is allowed at inference.
+
+\paragraph{Compute--accuracy trade-off.}
+Although the uniform prior does not explicitly favor early exit, it does not preclude efficient inference: at test time we can still cap steps or apply a halting threshold.
+For a fixed average step budget, models trained with a uniform prior achieve a strictly better accuracy--compute Pareto frontier than those trained with geometric priors, indicating that unbiased depth exploration during pretraining turns into better deployment trade-offs.
+\section{Physics of \ut{}s}
+\label{appendix:physics}
+In this appendix, we conclude all the experimental settings and details in \Cref{sec:understanding_ut}. \Cref{appendix:capo} includes the experiments on knowledge capacity; \cref{appendix:mano} includes the settings on knowledge manipulation synthetic tasks. \Cref{appendix:multihop} introduces the detailed setting on the synthetic QA task following \cite{yao2025language}. Finally, \Cref{appendix:theory} provides the theoretical results, detailed proof, and the discussion with the current theoretical results.
+\subsection{Capo: knowledge capacity}
+\label{appendix:capo}
+In this section, we introduce the knowledge capacity proposed in \cite{AL2024-knowledge3,Allenzhu2025-canon}. The task evaluates models' efficiency in memorizing factual knowledge within its parameters, which is measured by  \textit{bits per parameter}. We tested different sizes of models and visualize the knowledge scaling law through plotting \textit{bits v.s. parameter number}.
+
+\paragraph{Dataset: Synthetic Biographies} We synthesize fake biographies following the $\mathrm{bioS}(N)$ dataset in \cite{AL2024-knowledge3}. Specifically, we generate $N$ biographies of a random generated person together with their date of birth, city of birth, university, major, and employer. In our work, we online sample the individual attributes and generate the biographies in natural language using a random selected fixed template. An illustrative example is:
+
+\begin{center}
+    \emph{Layla Jack Beasley celebrates their birthday on January 24, 1914. They spent formative years in Portland, ME. They focused on Business Analytics. They supported operations for Delta Air Lines Inc. in Atlanta, GA. They received their education at Pepperdine University.}
+\end{center}
+
+\paragraph{Model} We use original GPT2 architecture and replace the positional encoding with RoPE \cite{su2023roformerenhancedtransformerrotary}. In the Capo task, we tie the LM head and the embedding layer. To test the capability of universal transformer, we also added looping module s.t. the transformer blocks can be looped several times. We explore a broad range of model sizes varying in hidden dimension and depth. The notation $a$-$b$-l$c$ represents the model with $64a$ hidden dimensions ($a$ attention heads with each head 64 dimensions), $b$ layers, and $c$ \ut{} steps (loops). The context length is set to 512. 
+
+\paragraph{Training details} We use AdamW optimizer by setting $(\beta_1,\beta_2)=(0.9,0.98), \epsilon=10^{-6}$ with 1000 steps of warmup followed by a cosine learning rate schedule from 1 to 0.1$\times$ of the original learning rate. We use bf16 training and packing is used during training. We masked different pieces of biographies from each other in each concatenated chunk.
+
+We pass each data piece for 1000 times (similar to the 1000-exposure in \cite{AL2024-knowledge3}) during training. Since the final performance is not sensitive to learning rate choices, we consider learning rate $\eta = 0.001, wd=0.02$, and total batch size 192. We pick $N\in\{20K, 50K, 100K, 200K, 500K\}$. We run all the experiments on 8 H200 GPUs.
+
+\paragraph{Evaluation: Knowledge Capacity Ratio} 
+After pretraining on the bioS($N$) dataset, we assess a model’s \emph{knowledge capacity}, 
+defined as the number of bits of information it can reliably store. To make this measure 
+comparable across models of different sizes, the raw bit count is normalized by the number 
+of model parameters, yielding a ``bits per parameter'' metric. 
+The derivation and motivation of the metric in discussed in \cite{AL2024-knowledge3}. For readers, we refer the detailed setting to Section 2.1 of \cite{AL2024-knowledge3}.
+
+\begin{definition}
+    Given a model $F$ with $P$ parameters trained over the bioS($N$) dataset $Z$, suppose it gives 
+$p_1 = \text{loss}_{\text{name}}(Z)$ and $p_2 = \text{loss}_{\text{value}}(Z)$, which are the sum of cross entropy loss on the name tokens and attribute tokens, respectively.
+The \emph{capacity ratio} 
+and the maximum achievable capacity ratio are
+ defined as
+\[
+R(F) \; \overset{\text{def}}{=} \; \frac{N \log_2 \frac{N_0}{e^{p_1}} + N \log_2 S_0 \, e^{p_2}}{P}, \quad R_{\max}(F) \; \overset{\text{def}}{=} \; \frac{N \log_2 N_0 \cdot N + N \log_2 S_0}{P},
+\]
+for 
+$N_0 = 400 \times 400 \times 1000$, $S_0 = 2 \times (12 \cdot 28 \cdot 200) \times 200 \times 300 \times 100 \times 263$ as all possible configurations.
+\end{definition}
+
+Ignoring names, each person encodes approximately $\log_2(S_0) \approx 47.6 \; \text{bits of knowledge}.$ 
+The evaluation accounts for \emph{partial correctness}. For instance, if a model 
+recalls the year of a person’s birth but not the exact date, the partially correct information 
+still contributes to the overall bit-level computation. This approach allows for a fine-grained 
+measurement of knowledge retention, rather than relying on a strict all-or-nothing scoring. 
+
+
+\subsection{Mano: knowledge manipulation}
+\label{appendix:mano}
+We followed \cite{Allenzhu2025-canon} and used the Mano task to investigate the models' capability of manipulating stored knowledge within the parameters without intermediate thoughts. 
+
+\textbf{Dataset} The dataset consists of modular arithmetic instances with tree structures of $\ell$ operations, where the number of operations $\ell\le L$ as the maximum length. $\ell$ is uniformly sampled from $[1,L]$. The expressions are presented in prefix notation. For example, a length-3 instance is:
+$$\texttt{<bos> <len\_3> - * a b + c d <ans> ans}$$
+which corresponds to $(a*b)+(c-d)\mod 23$. All the operations are on $\mathbb{F}_{23}$. The task only involves $(+,-,*)$. The only tokens we use are the operations, numbers from 0 to 22, and the special \texttt{<bos>, <ans>} and length tokens \texttt{len\_\{i\}} with $i\in [0,L]$.
+
+\paragraph{Training details} We use AdamW optimizer with $(\beta_1,\beta_2)=(0.9,0.98), \epsilon=10^{-6}$ and gradient clipping with maximum norm 1.0. We employ 1000 steps of warmup followed by a cosine learning rate schedule to minimal learning rate 0.1 of the peak learning rate. We use bf16 training with packing and set the context length to 1024 tokens. Different pieces of mano problems are masked from each other in each concatenated chunk during training.
+
+We conduct hyperparameter search over learning rates $lr \in \{0.00005, 0.0001, 0.0002, 0.0005\}$
+with weight decay 0.1 and global batch size 128. We experiment with model depths $L \in \{10, 16, 24\}$ layers and hidden dimension 1024. Training is performed for $\{80K, 110K, 200K\}
+$ steps respectively for different difficulties. We run all experiments across 3 random seeds and report the best performance. All experiments are conducted on 8 H200 GPUs.
+
+\paragraph{Evaluation} During evaluation, we only use the expressions with the hardest length $\ell=L$. Accuracy is computed separately due to the masks. We consider exact match accuracy since the final answer is single-token.
+
+
+
+\subsection{Multi-hop question answering on synthetic relations}
+\label{appendix:multihop}
+We followed \cite{yao2025language} to construct the natural language multi-hop QA task. Comparing with Mano, the QA task is more knowledge-heavy and with a slightly simpler structure. \cite{yao2025language} found that the model needs exponential many $k$-hop data for traditional transformer to learn. We chose this task to investigate if recursive structure in the reused-parameters can improve the sample efficiency of the task, showing better manipulation capability of \ut{}.
+
+\paragraph{Dataset} The dataset contains 
+$|\mathcal{E}|$ entities—each with a unique name—and 
+$N$ relation types. We created 500 distinct single-token person names (e.g., Jennifer) and 20 single-token relation names (e.g., instructor) to serve as namespaces for entities and relations. We reused the name list in \cite{yao2025language}. The complete list of relation names and a partial list of entity names appear in Tables 5 and 6 in \cite{yao2025language}. The multi-hop questions are generated through a $K=5$ hierarchical layers, where each layer has 100 individuals. Each entity is connected to $|\mathcal{R}|$ randomly chosen person in the next layer. This structure naturally generates $|\mathcal{E}|/5 \times |\mathcal{R}|^k$ $k$-hop questions. 
+
+For training, we use part of all the 3-hop training set and test on the leave-out 3000 test questions. For each test instance, we greedy decode the single token answer given the question prompt (e.g. `Who is the instructor of the teacher of Bob? $\backslash n$ Answer:'). We evaluate the exact match accuracy.
+
+
+\paragraph{Training details} We use AdamW optimizer with $(\beta_1,\beta_2)=(0.9,0.98), \epsilon=10^{-6}$ and gradient clipping 1.0. We run 1000 steps of linear warmup followed by a cosine learning rate schedule to minimal learning rate 0.1 of the peak learning rate. We use bf16 training with packing with context length 1024 tokens. QA pairs from distinct samples are masked from each other during training.
+
+We use a base model architecture with 1024 hidden dimensions, 16 attention heads, and 6 layers. We allow it to loop in $\{1,2,3,4\}$ times. Following the experimental setup in \cite{yao2025language}, we set the learning rate to 0.0005 with 1000 warmup steps and train for a total of 20,000 steps using batch size 2048. We run all experiments across 4 random seeds and report the average performance. In the sample size plot, we report the best performance. All experiments are conducted on 8 H200 GPUs.
+
+% 1024 dimension 16 heads 6 layers as the base. 0.0005 learning rate, warm up 1000, total 20000 steps, batchsize 2048. follow their setting in \cite{yao2025language}. 4 seeds each experiment, best/average
+
+\subsection{Theory: latent thought with \ut{}}
+\label{appendix:theory}
+In this section, we prove that \ut{} can solve the graph reachability problem (with part of the graph knowledge learned in the parameters) in $O(\log n)$ steps. We first define the task rigorously and state our main theorem. We finally discuss the theoretical improvement, caveats of the results, and all related theoretical results.
+
+We first define our task based on the intuition of knowledge manipulation. Challenging knowledge manipulation tasks often have multiple steps or hierarchical structures, which requires the model to search in the knowledge graph with directional dependencies formed by the atomic facts or knowledge. Moreover, the context also contains conditions or new facts necessary for the problem. Therefore, we consider the searching task that requires the model to both \textbf{encode the fixed hidden knowledge graph $G$} in the parameters and \textbf{utilize the contextual information (additional graph)} $G_{\text{ctx}}$. The goal is to check if two queried nodes are connected. The formal definition is as follows (modified from \cite{zhu2025reasoning}):
+\begin{definition}[Graph reachability on knowledge graph]
+    Let $V = \{v_1, v_2, \ldots, v_n\}$ is the set
+of vertices and $E = \{e_1, e_2, \ldots, e_m\}$ is the set of edges. Let $G = (V, E)$ be a directed hidden knowledge graph, and $G_{\text{ctx}}=(V,E_{\text{ctx}})$ be an input additional knowledge graph. 
+Given a source node $s$ a target node $t$, the task is to output $1$ when there exists a path from $s$ to $t$ on the combined graph $G+G_{\text{ctx}}:= (V,E+E_{\text{ctx}})$, and output 0 when $s$ cannot reach $t$ on the combined graph.
+\end{definition}
+\paragraph{Transformer architecture} In this setting, we consider a simple single-head transformer architecture. We only use one-head and a two-layer gated MLP layer. For clearer theoretical demonstration, we use a special normalization layer $\mathrm{LN}()$ to threshold on $H$: $\mathrm{LN}(H)_{i,j}=\mathbf{1}\{H_{i,j}>0\}$. And the overall architecture for each loop is (where $Q,K,V,W_1,W_2$ are all shared through layers)
+$$H_{i+0.5}=\mathrm{LN}(H_i+\mathrm{Attn}_{Q,K,V}(H_i)),\ \mathrm{Attn}_{Q,K,V}(H_i)=VH_i\text{softmax}(H_i^\top K^\top QH_i)$$
+$$H_{i+1}=\mathrm{LN}(H_{i+0.5}+W_2 \mathrm{ReLU}(W_1H_{i+0.5}))$$
+
+\paragraph{Input Format} We define the adjacency matrix of the graph $G$ as $A=[a_1,a_2,...,a_n]\in\R^{n\times n}$. Similarly, we define $A_{ctx}=[a_{1,ctx},a_{2,ctx},...,a_{n,ctx}]$. We use one-hot embeddings $v_i$ to denote the vertex embedding. We consider the following input sequence format with length $n+1$ for this task (assuming we already have the embeddings): 
+$$H_0=\begin{bmatrix}
+    v_1 &v_2&\cdots&v_n\\
+    a_{1,ctx}&a_{2,ctx}&\cdots&a_{n,ctx}\end{bmatrix}\in \R^{2n\times n}$$
+where the first $n$ tokens are the input context graph adjacency matrix. 
+We assume the \ut{} recurrent for $L$ steps, and we denote the hidden state sequence for the $i$-th recurrence:
+$$H_i=\begin{bmatrix}
+    v_1^{(i)} &v_2^{(i)}&\cdots&v_n^{(i)}\\
+    a_{1}^{(i)}&a_{2}^{(i)}&\cdots&a_{n}^{(i)}\end{bmatrix}.$$
+For simplicity, we ignore the encoding and decoding process and have a direct output protocol: the final output for query $(s,t)$ is the $t$-th entry of $a_{s}^{(L)}$. 
+
+Now we state the main theorem given the previous setting.
+\begin{theorem}[\ut{} solves reachability in $\log D$ steps]
+    \label{appendix_thm:ut_graph_connectivity}
+    Fix $n$ as the maximum size of the combined knowledge graph $G$. Taking the adjacency matrix of the context graph $G_{\text{ctx}}\in \R^{n\times n}$ fed in as a $n$-token sequence and given a query pair $(s,t)$, there exists a one-layer, single-head transformer independent of $G_{\text{ctx}}$, with recurrent $O(\log_2 D)$ times and a hidden dimension of $d_e=2n$ that can check whether there exists a path from $s$ to $t$ in the combined knowledge graph $(G+G_{\text{ctx}})$, where $D$ is the diameter of $(G+G_{\text{ctx}})$.
+\end{theorem}
+
+We directly construct the attention and the MLP layer for the \ut{} to implement an algorithm that is similar to Warshall’s algorithm, using Boolean matrix powers with repeated squaring. The proof idea is to do a parallel search on \textbf{all pairs connectivity}, doubling the reachable distance with each loop. Since the maximum distance (i.e. diameter) is $D$, we only need $O(\log D)$ rounds to decide whether two nodes are connected or not. The attention enables each loop to iterative square the current adjacency matrix, and the MLP stores the hidden encoded graph $G$'s adjacency matrix to help internal knowledge manipulation.
+\begin{proof}
+    We assign the parameters $Q,K,V,W_1,W_2$ as follows ($\beta\to +\infty$ is a large scalar):
+    $$K=\beta\begin{bmatrix}
+        I_n&0_{n\times n}\\0_{n\times n}&0_{n\times n}
+    \end{bmatrix}, Q= V=\begin{bmatrix}
+        0_{n\times n}&0_{n\times n}\\
+        0_{n\times n}&I_n
+    \end{bmatrix}, W_2 = I_{2n},\ W_1 = \begin{bmatrix}
+        0_{n\times n}&0_{n\times n}\\
+        A&0_{n\times n}
+    \end{bmatrix}.$$
+    Recall that the input sequence is
+    $$H_0=\begin{bmatrix}
+    v_1 &v_2&\cdots&v_n\\
+    a_{1,ctx}&a_{2,ctx}&\cdots&a_{n,ctx}\end{bmatrix}\in \R^{2n\times n},$$
+    which only contains the input context graph's adjacency matrix.
+    We assume the \ut{} loops for $L$ steps, and we denote the hidden state sequence for the $i$-th loop:
+    $$H_i=\begin{bmatrix}
+        v_1^{(i)} &v_2^{(i)}&\cdots&v_n^{(i)}\\
+        a_{1}^{(i)}&a_{2}^{(i)}&\cdots&a_{n}^{(i)}\end{bmatrix}.$$
+    For simplicity, we directly output the $t$-th entry of $a_{s}^{(L)}$ for query $(s,t)$.
+    The model should check whether $(s,t)$ are connected, i.e. $(a_s^{(L)})_t=1$ or $0$.
+    We are going to prove by induction that for each recursion, $a_j^{(i)}$ contains all the vertices $v_k$ (i.e. $(a_j^{(i)})_k=1$)  that vertex $v_j$ is connected to, and the distance between $v_j$ and $v$ are less than or equal to $2^{i-1}$. Therefore, we only need $\log D+1$ loops to get the final answer. 
+
+    \textbf{Base.} When $i=1$, the constructed parameters ensure that the $j$-th node $v_j$ attend to all the nodes that are directly connected to $v_j$ with the same attention score $\beta$. This guarantees that the attention layer will average the nodes' tokens that $v_j$ is connected to. The $j$-th column of the attention before the thresholding layer becomes ($|a_{j,ctx}|$ means the nodes that $v_j$ connects to)
+    $$\begin{bmatrix}
+        v_j\\
+        a_{j}'
+    \end{bmatrix}=\begin{bmatrix}
+        v_j\\
+        a_{j,ctx}
+    \end{bmatrix}+\frac{1}{|a_{j,ctx}|}\sum_{k:(a_{j,ctx})_k=1}\begin{bmatrix}
+        0_n\\
+        a_{k,ctx}
+    \end{bmatrix}$$
+    This updated adjacency vector naturally contains all nodes that has distance $\le 2$ to $v_j$ in context graph $G_{ctx}$ after the thresholding layer. It naturally includes nodes with distance 1.
+
+    Now we consider the output of the MLP layer, which only adds the adjacency matrix of hidden knowledge graph $G$ to the residual stream.
+    $$\begin{bmatrix}
+        v_j\\
+        a_{j}''
+    \end{bmatrix}=\begin{bmatrix}
+        v_j\\
+        a_{j}'
+    \end{bmatrix}+W_2\mathrm{ReLU}\left(W_1\begin{bmatrix}
+        v_j\\
+        a_{j}'
+    \end{bmatrix}\right)=\begin{bmatrix}
+        v_j\\
+        a_{j}'
+    \end{bmatrix}+\begin{bmatrix}
+        0_n\\
+        a_{j}
+    \end{bmatrix},$$
+which combines the adjacency matrices of the context graph $G_{ctx}$ and the hidden knowledge graph $G$. After the thresholding in the end, all non-zero entries become 1, which already includes all distance 1 nodes for all nodes. Therefore, we have that $a_{j,ctx}^{(1)}$ contains all reachable nodes within distance 1 of node $v_j$ after the first recursion.
+
+\textbf{Induction.} Assume at the recursion step $i$ ($i\ge 1$), all $a_{j}^{(i)}$ contains all reachable vertices within distance $2^{i-1}$ of $v_j$. Now the hidden state sequence is going through loop $i+1$. To finish the proof, we show that $a_{j}^{(i+1)}$ contains all reachable vertices within distance $2^{i}$ of $v_j$.
+
+The attention for this stage looks at $a_{j}^{(i+1)}$ now, and the $j$-th node $v_j$ uniformly attend to all the nodes that are connected to $v_j$ within distance $2^{i-1}$. The $j$-th column of the attention before the thresholding layer becomes ($|a_{j}^{(i)}|$ means the number of nodes)
+    $$\begin{bmatrix}
+        v_j\\
+        a_{j}^{(i+0.5)}
+    \end{bmatrix}=\begin{bmatrix}
+        v_j\\
+        a_{j}^{(i)}
+    \end{bmatrix}+\frac{1}{|a_{j}^{(i)}|}\sum_{k:(a_{j}^{(i)})_k=1}\begin{bmatrix}
+        0_n\\
+        a_{k}^{(i)}
+    \end{bmatrix}$$
+    After thresholding, the adjacency vector aggregates $a_j^{(i)}$ and all $a_k^{(i)}$ where $v_k$ has distance $\le 2^{i-1}$ to $v_j$ in combined graph $G_{ctx}+G$. Meanwhile, $a_k^{(i)}$ contains all vertices connected to $v_k$ with distance $\le 2^{i-1}$. Therefore, the combined vector includes all nodes within distance $2^{i}$ of $v_j$.
+
+    Finally, we consider the final MLP:
+    $$\begin{bmatrix}
+        v_j\\
+        a_{j}^{(i+1)}
+    \end{bmatrix}=\mathrm{LN}\left(\begin{bmatrix}
+        v_j\\
+        a_{j}'
+    \end{bmatrix}+W_2\mathrm{ReLU}\left(W_1\begin{bmatrix}
+        v_j\\
+        a_{j}^{(i+0.5)}
+    \end{bmatrix}\right)\right)=\mathrm{LN}\left(\begin{bmatrix}
+        v_j\\
+        a_{j}^{(i+0.5)}
+    \end{bmatrix}+\begin{bmatrix}
+        0_n\\
+        a_{j}
+    \end{bmatrix}\right),$$ which also contains all vertices connected to $v_j$ with distance $2^i$. That means $(a_{s}^{(i+1)})_t$ is a precise indicator of whether $(s,t)$ is connected within $2^i$ distance. By induction, we finish the proof and with $L=\lceil\log_2 D\rceil+1$ recursion steps, the model can correctly solve reachability on the combined graph $G+G_{ctx}$.
+\end{proof}
+
+\textbf{Discussion on related theoretical results} We provided a modified construction from \cite{merrill2025little}, which requires $n^3$ padding tokens that increase the computation complexity to $O(n^6)$. However, our construction requires $O(n)$ hidden dimension as the continuous CoT did in \cite{zhu2025reasoning}. The $\Theta(n)$ requirement is necessary because the superposition in latent space needs to (in the worst case) encode $\Theta(n)$ nodes' information, which can be a theoretical limitation. The requirement can be relaxed when there is an upper bound for the maximum number of vertices that some vertex is connected to. 
+
+\textbf{Input format} In our construction, the input format is the adjacency matrix of the graph. As a natural alternative, \cite{zhu2025reasoning} used a sequence with length $O(n^2)$ as the input to encode all the different edges. To make \ut{} also work on this setting, some additional induction head mechanism (similar to \cite{zhu2025reasoning}) is needed to extract all edges and combine them into the adjacency matrix. With slight modification, we can still get the solution with sequential steps $O(\log D)$.
+
+\section{Scaling Law for \ut{}s}
+
+To further explore the potential of \ut{}, we conduct a series of small-scale experiments to investigate the scalability and predictability inherent in \ut{}. Specifically, our work focuses on the following three research questions:
+
+\begin{itemize}[itemsep=0.0pt,topsep=0pt,leftmargin=*]
+    \item \textbf{RQ1}: What is the performance gap between standard models and \ut{}?
+    \item \textbf{RQ2}: How do recurrent steps impact the total loss and step-wise loss in the context of \ut{}?
+    \item \textbf{RQ3}: What is the inherent connection between total loss and step-wise loss?
+\end{itemize}
+
+
+\subsection{RQ1: What is the performance gap between standard models and \ut{}?}
+\label{scaling_law_sub_1}
+% 1. The performance gap between standard models and UT
+
+To understand the performance gap between standard models and \ut{}, we quantify this difference in terms of benchmark performance. We also observe how this gap varies with changes in recurrent step and model size to guide the further scaling and iteration of \ut{}.
+
+\paragraph{Experimental Setup} We prepare five model sizes: 53M, 134M, 374M, 778M, and 1.36B. For recurrent steps, we prepare four different depths: 1, 2, 4, and 8. It is worth noting that for standard models, different recurrent steps effectively multiply the number of layers in the model. We evaluate the performance on the following benchmarks: ARC-Challenge~\citep{allenai:arc}, ARC-Easy~\citep{allenai:arc}, HellaSwag~\citep{zellers2019hellaswag}, LAMBADA~\citep{lambada}, OpenBookQA~\citep{mihaylov2018can}, and PIQA~\citep{bisk2020piqa}. In all sub-experiments, we train on 20B tokens using the FineWeb-Edu corpus~\citep{penedo2024fineweb}. We present the benchmark performance from the final step. For \ut{}, the recurrent step used for evaluating is the maximum recurrent step. 
+% Therefore, we are essentially comparing the gap between parameter sharing and parameter non-sharing.
+
+By observing the trends in the curves, we derive the following observations:
+
+1. Whether standard models or \ut{}, the model's performance improves with increasing model size and recurrent step. As shown in Figure~\ref{fig:scalinglaw_performance_vs_modelsize}, for all recurrent steps, the benchmark performance of both the \ut{} and Standard models increases as the model size grows, which aligns with the principle of LLMs: larger is better. As shown in Figure~\ref{fig:scalinglaw_performance_vs_recurrentstep}, except for the \ut{} at 778M and 1.364B, both the \ut{} and Standard models show that benchmark performance increases as the recurrent step increases. This indicates that latent reasoning is indeed useful for both the \ut{} and Standard Transformer.
+
+\begin{figure}[htbp!]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/scalinglaw_plots_performance_vs_model_size.pdf}
+    \caption{The average benchmark performance of \ut{} and Standard Transformer models under different recurrent steps as model size varies. With a recurrent step of 1 (\textit{top left}), both models have identical architectures, resulting in overlapping curves. Overall, as the model size increases, the benchmark performance improves. The average benchmark score demonstrates the average results of the six benchmarks.}
+    \label{fig:scalinglaw_performance_vs_modelsize}
+\end{figure}
+
+\begin{figure}[htbp!]
+    \centering
+    \includegraphics[width=\linewidth]{figures/scalinglaw_plots_performance_vs_recurrent_step.pdf}
+    \caption{The average benchmark performance of \ut{} and Standard Transformer models under different model sizes as recurrent step varies. Except for the \ut{} at the model size of 778M and 1.364B, in all other cases, the benchmark performance of the model increases with the increase in recurrent steps.}
+    \label{fig:scalinglaw_performance_vs_recurrentstep}
+\end{figure}
+
+2. Overall, the performance of the standard model exceeds that of \ut{} under the same conditions. This gap increases with the recurrent step and decreases with the model size. Observing Figure~\ref{fig:scalinglaw_performance_vs_modelsize} and Figure~\ref{fig:scalinglaw_performance_vs_recurrentstep}, it is clear that the benchmark performance of the Standard model is consistently higher than that of \ut{}, indicating that the Standard model has a scoring advantage without considering computational budget. Furthermore, we define the benchmark performance gap as the benchmark performance of the Standard model minus that of \ut{}, and this value is positive in all our experiments. As shown in Table~\ref{tab:scalinglaw_performancegap}, as the recurrent step increases, the benchmark performance gap also increases, suggesting that as the number of recurrences rises, the effect of models not sharing parameters gradually surpasses that of models sharing parameters. Besides, we find that the benchmark performance gap generally has a negative correlation with model size when the maximum recurrent step is relatively low, meaning that as the model size increases, the performance of \ut{} becomes closer to that of the Standard model, resulting in a smaller gap between the two. This trend is particularly consistent when the recurrent step is 4.
+
+\begin{table}[htbp!]
+    \centering
+    \small
+    \caption{The average benchmark performance gap between \ut{} and Standard models as the recurrent step varies at different model sizes. The gap is defined as (Standard model score - \ut{} score). As the recurrent step increases, the performance gap generally increases.}
+    \label{tab:scalinglaw_performancegap}
+    \begin{tabular}{@{}lrr@{}}
+    \toprule
+     & \multicolumn{2}{c}{\textbf{Average Performance Gap}} \\
+    \cmidrule(lr){2-3}
+    \textbf{Model Size} & \textbf{Step 2} & \textbf{Step 4} \\
+    \midrule
+    170M & 0.021 & 0.039 \\
+    340M & 0.023 & 0.037 \\
+    680M & 0.015 & 0.026 \\
+    1.3B & 0.017 & 0.025 \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+
+\subsection{RQ2: How do recurrent step impact the total loss and step-wise loss in the context of \ut{}?}
+\label{scaling_law_sub_2}
+% 2. The effect of recurrent steps to total loss and step-wise loss
+
+In this subsection, we investigate the predictability and generalizability of \ut{} from the perspective of training loss, examining the impact of recurrent step on the trends in total loss and step-wise loss. The experiment is set up in complete consistency with Section~\ref{scaling_law_sub_1}, but we focus more on the total loss and step-wise loss during the training process. Here, step-wise loss refers to the loss of the same \ut{} at different recurrent step.
+
+Here, we have following variables: model size $N$, training data size $D$, maximum recurrent step $T_m$, recurrent step $T$, total loss $L_t$, and step-wise loss $L_s$. Following Chinchilla~\citep{hoffmann2022training}, we first attempt to fit the relationship between $L_t$ and $N,D,T_m$ in the form of a power law:
+
+$$
+L_t = E + \frac{A}{(N+t_1)^\alpha} + \frac{B}{(D+t_2)^\beta} + \frac{C}{(T_m+t_3)^\gamma}
+$$
+
+% predictability
+The purpose of $t_1$, $t_2$, and $t_3$ is to prevent the variables from exploding in value near zero, allowing the fitting curve to be smoother. We refer to above formula as the \textbf{Total Loss Scaling Law}. First, to validate the predictability of \ut{}, we fit all the data points, and the resulting curve is shown in Figure~\ref{fig:scalinglaw_totalloss_scalinglaw_predictability}. We find that the actual loss curve and the predicted loss curve are highly consistent, demonstrating the predictability of \ut{} in terms of model size, training data size, and max recurrent step. We quantify the consistency of the scaling law using the coefficient of determination $R^2$. An absolute value of the $R^2$ closer to 1 indicates a better fit, with positive values representing a positive correlation and negative values representing a negative correlation. Fitting the Total Loss Scaling Law using all data points and calculating $R^2$ with all data points, we obtain an $R^2$ value of 0.9596. This confirms the strong correlation between total loss and model size, training data size, and max recurrent step, demonstrating the predictability of the Total Loss Scaling Law.
+% However, it is worth noting that the fitting parameter $\gamma$ is negative, suggesting that overall, $L_t$ and $T_m$ exhibit a positive correlation. We believe the reason for this is primarily due to .. \textcolor{red}{@ridger}
+
+\begin{figure}[htbp!]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/scalinglaw_plots_totalloss_scalinglaw_predictability.pdf}
+    \caption{Illustration of the actual loss curve and the loss curve predicted by the scaling law. To demonstrate the predictability of \ut{}, we have used all data points for fitting, proving its predictability in terms of model size, training data size, and max recurrent step. The orange dashed line represents the prediction, while the blue solid line represents the actual loss.}
+    \label{fig:scalinglaw_totalloss_scalinglaw_predictability}
+\end{figure}
+
+% generalizability
+In addition to its predictability, we further explore the generalizability of the Total Loss Scaling Law. Predictability refers to the ability of the Scaling Law to fit all data points into a unified curve when all data points are available. Generalizability, on the other hand, indicates whether the Scaling Law can predict unseen data points when fitting is done with a subset of data points. For example, generalizability tests whether the performance of a 14B model can be predicted using the known performances of 1B and 7B models~\citep{que2024d}. To verify its generalizability across model size $N$, training data size $D$, and maximum recurrent step $T_m$, we have conducted related experiments, details can be found in Appendix~\ref{app:generalizabilty_exp_totalloss_scalinglaw}.
+
+During the \ut{} training process, we compute the cross-entropy loss at each recurrent step, which we refer to as step-wise loss $L_s$. We aim to explore the relationship between step-wise loss $L_s$ and the current recurrent step $T$, model size $N$, and training data size $D$. Similarly, we can fit the scaling law between $L_s$ and $N,D,T$, with the formula as follows:
+
+$$
+L_s = E + \frac{A}{(N+t_1)^\alpha} + \frac{B}{(D+t_2)^\beta} + \frac{C}{(T+t_3)^\gamma}
+$$
+
+We refer to the above formula as the \textbf{Step-wise Loss Scaling Law}. We also present the fitting effectiveness from the perspectives of predictability and generalizability. Regarding predictability, we fit all data points. 
+Even with the same recurrent step, the loss curve can vary significantly across different maximum recurrent steps. To ensure the independence of the variable recurrent step $T$, we do not consider the maximum recurrent step in the Step-wise Loss Scaling Law formula and focus solely on the relationship between $L_s$ and $N,D,T$. 
+Therefore, we have a total of three major experiments, each representing the fitting of the Step-wise Loss Scaling Law for maximum recurrent steps of 2, 4, and 8. The fitting results of the Step-wise Loss Scaling Law are shown in Figure~\ref{fig:scalinglaw_stepwiseloss_scalinglaw_predictability_maxrecurrentstep_2}, Figure~\ref{fig:scalinglaw_stepwiseloss_scalinglaw_predictability_maxrecurrentstep_4}, and Figure~\ref{fig:scalinglaw_stepwiseloss_scalinglaw_predictability_maxrecurrentstep_8}, which illustrate the trends of the actual and fitted curves for maximum recurrent steps of 2, 4, and 8, respectively. 
+We find that in some cases in Figure~\ref{fig:scalinglaw_stepwiseloss_scalinglaw_predictability_maxrecurrentstep_4} and Figure~\ref{fig:scalinglaw_stepwiseloss_scalinglaw_predictability_maxrecurrentstep_8}, $L_s$ increases with the increase in $D$. We consider this a special case and will discuss it in detail in Section~\ref{sec:scalinglaw_rq3}; we will ignore these outlier data points during fitting. The $R^2$ for the three max recurrent steps are 0.8898, 0.8146, and 0.795, respectively. As the maximum recurrent step increases, the increase in the number of data points leads to lower $R^2$ values. The step-wise loss itself is less stable than the total loss, resulting in greater variability. Thus, the obtained $R^2$ values are not as high as those of the Total Loss Scaling Law. However, it is still evident that the scaling law is able to capture the overall trend of the curves, demonstrating the predictability of the Step-wise Loss Scaling Law.
+The fitting parameter $\gamma$ of the Step-wise Loss Scaling Law is positive, indicating that $L_s$ decreases as the recurrent step increases. This aligns with our original intent in the design of the recurrence. Besides, we present the generalizability of the Step-wise Loss Scaling Law in Appendix~\ref{app:generalizabilty_exp_stepwiseloss_scalinglaw}.
+
+\begin{figure}[htbp!]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/scalinglaw_plots_stepwiseloss_scalinglaw_predictability_maxrecurrentstep_2.pdf}
+    \caption{Illustration of the actual loss curve and the loss curve predicted by the Step-wise Loss Scaling Law when the maximum recurrent step is equal to 2.}
+    \label{fig:scalinglaw_stepwiseloss_scalinglaw_predictability_maxrecurrentstep_2}
+\end{figure}
+
+\begin{figure}[htbp!]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/scalinglaw_plots_stepwiseloss_scalinglaw_predictability_maxrecurrentstep_4.pdf}
+    \caption{Illustration of the actual loss curve and the loss curve predicted by the Step-wise Loss Scaling Law when the maximum recurrent step is equal to 4.}
+    \label{fig:scalinglaw_stepwiseloss_scalinglaw_predictability_maxrecurrentstep_4}
+\end{figure}
+
+\begin{figure}[htbp!]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figures/scalinglaw_plots_stepwiseloss_scalinglaw_predictability_maxrecurrentstep_8.pdf}
+    \caption{Illustration of the actual loss curve and the loss curve predicted by the Step-wise Loss Scaling Law when the maximum recurrent step is equal to 8.}
+    \label{fig:scalinglaw_stepwiseloss_scalinglaw_predictability_maxrecurrentstep_8}
+\end{figure}
+
+In summary, both total loss and step-wise loss exhibit a strong correlation with $N,D,T/T_m$. The fitting results demonstrate the predictability and generalizability of the Scaling Law for \ut{}. In next section, we will explore the relationship between total loss and step-wise loss in greater depth.
+
+\subsection{RQ3: What is the inherent connection between total loss and step-wise loss?}
+\label{sec:scalinglaw_rq3}
+% 3. Bridge Between Step-wise Loss and Total Loss: Loop Distribution
+
+We first review the training objectives of \ut{}:
+
+$$
+L_t = \sum_{T=1}^{T_{m}} q_\phi(z=t \mid x)\, L_{s}^{(T)} - \beta \cdot H(q_\phi(z \mid x))
+$$
+
+$L_s^{(T)}$ represents the step-wise loss at the recurrent step $T$. By analyzing the above form, we can see that the total loss consists of two components. The first part is the expected task loss, which is a weighted sum of the step-wise loss. The second part is entropy regularization, whose primary purpose is to ensure that the learned gating mechanism $q_\phi$ does not converge to a specific recurrent step. 
+
+
+In our extensive small-scale experiments, we have observed an interesting phenomenon: the exploitation of total loss for shallow step-wise loss. To be specific, as shown in Figure~\ref{fig:scalinglaw_stepwiseloss_scalinglaw_predictability_maxrecurrentstep_4} and Figure~\ref{fig:scalinglaw_stepwiseloss_scalinglaw_predictability_maxrecurrentstep_8}, when the model size is insufficient, the shallow step-wise loss increases with the growing amount of training data. This is an unusual phenomenon, typically, all step-wise losses should decrease as the amount of training data increases. We attempt to explain this phenomenon. In Section~\ref{scaling_law_sub_2}, it is mentioned that the step-wise loss decreases with an increasing recurrent step, indicating that deeper recurrent steps result in lower $L_s$. To minimize the expected task loss, the learned gating mechanism assigns more weight to deeper recurrent steps. However, entropy regularization ensures that the learned gating mechanism does not deviate too much from the prior distribution. When the model size is insufficient, the amount of information it can encode is limited. To further reduce the total loss, this results in an increase in shallow step-wise loss, which in turn allows the weights to favor higher recurrent steps to lower the total loss. 
+% Thus, to ensure that the trend of step-wise loss remains normal, for \ut{}, a larger model size may be more effective.
+Thus, to ensure that the trend of step-wise loss remains normal, a larger model size may be more effective for \ut{}.
+
+As mentioned in Section~\ref{scaling_law_sub_2}, the scaling law for \ut{} is predictable and generalizable for both total loss and step-wise loss. We have:
+
+% In Equation ~\ref{eq:loss}, as the amount of training data increases, the learned gating mechanism stabilizes, and we observe that the value of the entropy regularization term becomes relatively low, accounting for approximately 1\% to 5\% of the total loss. To verify the correlation between the trends of total loss and step-wise loss, we will ignore the entropy regularization term. Thus, we have:
+
+
+$$
+L_t = E_t + \frac{A_t}{(N+t_{1t})^\alpha} + \frac{B_t}{(D+t_{2t})^\beta} + \frac{C_t}{(T_m+t_{3t})^\gamma}
+$$
+$$
+L_s^{(T)} = E_s + \frac{A_s}{(N+t_{1s})^\alpha} + \frac{B_s}{(D+t_{2s})^\beta} + \frac{C_s}{(T+t_{3s})^\gamma}
+$$
+
+The subscripts $s$ and $t$ represent the fitting parameters for the Step-wise Loss Scaling Law and the Total Loss Scaling Law, respectively. By substituting the Step-wise Loss Scaling Law into the training objectives, we have:
+
+$$
+L_t = \sum_{T=1}^{T_{m}} q_\phi(z=t \mid x)\, \left(E_s + \frac{A_s}{(N+t_{1s})^\alpha} + \frac{B_s}{(D+t_{2s})^\beta} + \frac{C_s}{(T+t_{3s})^\gamma}\right) - \beta \cdot H(q_\phi(z \mid x))
+$$
+
+For the first three terms in $L_s^{(T)}$, the sum of $q_\phi$ equals 1, allowing us to factor it out, which gives us:
+
+$$
+L_t = E_s + \frac{A_s}{(N+t_{1s})^\alpha} + \frac{B_s}{(D+t_{2s})^\beta} + \sum_{T=1}^{T_{m}} q_\phi(z=t \mid x)\, \frac{C_s}{(T+t_{3s})^\gamma} - \beta \cdot H(q_\phi(z \mid x))
+$$
+
+As the amount of training data increases, the learned gating mechanism $q_\phi$ stabilizes, and we observe that the value of the entropy regularization term becomes relatively low, accounting for approximately 1\% to 5\% of the total loss. If the form of $q_\phi$ gradually stabilizes, we treat it as a constant term, and the formula becomes:
+
+$$
+L_t = E_s + \frac{A_s}{(N+t_{1s})^\alpha} + \frac{B_s}{(D+t_{2s})^\beta} + E_{other}
+$$
+
+In Section~\ref{scaling_law_sub_2}, when considering the Step-wise Loss Scaling Law, we will fix the maximum recurrent step. Once we determine the model's maximum recurrent step $T_m$, the forms of the above formula and the Total Loss Scaling Law are completely consistent, indicating that there is a trend consistency in the scaling law between total loss and step-wise loss. 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{figures/scalinglaw_round_wise_histograms.png}
+    \caption{Distribution of the learned ponder weights ($q_\phi(z=t \mid x)$) for each recurrent step $t$ when the maximum recurrent step $T_m=4$. These weights were collected during inference on the MMLU benchmark.}
+    \label{fig:round_wise_his}
+\end{figure}
+We further demonstrate this through practical experiments. We take the situation where the max recurrent step is equal to 4. First, we perform a standard fitting of the Step-wise Loss Scaling Law to obtain the fitting parameters $E_s, A_s, B_s, C_s,$ and so on. Next, we observe and record the distribution of $q_\phi$ in the last 10\% of the steps, as shown in Figure~\ref{fig:round_wise_his}. For convenience, we take the average value of $q_\phi$ at different recurrent steps and treat it as a normal discrete distribution, resulting in the distribution \{0.01, 0.05, 0.425, 0.515\}. We then substitute this distribution and the $T$ values into the training objective, ignoring the entropy regularization term (after the training stabilizes, it becomes relatively low, for simplicity, we will just ignore it). This leads to a fitting formula, and upon substituting the actual fitting data points $N$ and $D$, the computed $R^2$ value is 0.961, with the fitting results illustrated in Figure~\ref{fig:scalinglaw_estimate_scalinglaw}. We can see that the fitting accuracy is high, and the predicted curve closely matches the actual curve, indicating that, under a relatively rough estimate, step-wise loss can be transformed into total loss, thus indirectly suggesting an intrinsic connection between the two.
+
+\begin{figure}[htbp!]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/scalinglaw_plots_estimate_scalinglaw.pdf}
+    \caption{Illustration of the actual loss curve and the loss curve predicted by the estimated Scaling Law when the maximum recurrent step is equal to 4.}
+    \label{fig:scalinglaw_estimate_scalinglaw}
+\end{figure}
+\section{Details of the Scaling Law for \ut{}}
+\subsection{Generalizability for the Total Loss Scaling Law}
+\label{app:generalizabilty_exp_totalloss_scalinglaw}
+
+To demonstrate the generalizability of the Total Loss Scaling Law across model size, training data, and maximum recurrent step, we have conducted relevant experiments. Our evaluation metric is the coefficient of determination $R^2$. To evaluate the fitting effectiveness of the Scaling Law, we calculate the coefficient of determination of all data points.
+
+\textbf{Model Size Generalizability} For model size generalizability, our total data points include five different model sizes: 53M, 134M, 374M, 778M, and 1.364B. We select three model sizes as fitting data points, resulting in $\binom{5}{3}=10$ possible combinations. After fitting, the average $R^2$ across the 10 combinations is 0.9542, which is similar to the result obtained with the full data points, demonstrating the model size generalizability of the Total Loss Scaling Law. Figure~\ref{fig:totalloss_scalinglaw_generalizability_modelsize} illustrates an example.
+
+\begin{figure}[htbp!]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/scalinglaw_plots_totalloss_scalinglaw_generalizability_modelsize.pdf}
+    \caption{Illustration of model size generalizability for the Total Loss Scaling Law. The fitting data includes model sizes of 374M, 778M, and 1.364B. The predicted curves for the unseen model sizes of 53M and 134M closely align with the actual curves, demonstrating the generalizability of the Total Loss Scaling Law with respect to model size.}
+    \label{fig:totalloss_scalinglaw_generalizability_modelsize}
+\end{figure}
+
+\textbf{Training Data Generalizability} Regarding the training data size, we are primarily interested in whether the Scaling Law can predict model performance as training data increases. Therefore, we typically use the preceding data points to predict future data points. To align with this starting point, we have conducted three sets of experiments, using the current 25\%, 50\%, and 75\% of the data points as fitting data to predict the overall fitting performance.The $R^2$ values for using the first 25\%, 50\%, and 75\% of the data as fitting points are 0.9385, 0.9609, and 0.962, respectively. It is evident that as the number of data points increases, the consistency between the fitted curves and the actual curves improves. In other words, if you want to predict model performance at larger training sizes, collecting data points closer to those of larger model sizes will yield better prediction results.
+
+\textbf{Max Recurrent Step Generalizability} We have conducted a total of three different maximum recurrent steps: 2, 4, and 8. To verify the generalizability with respect to maximum recurrent step, we select two of these as fitting data points and perform the fitting, followed by validation on the full data points and calculation of $R^2$. The average $R^2$ for the three sets of experiments is 0.9581, demonstrating the generalizability of the Total Loss Scaling Law with respect to maximum recurrent step.
+
+\subsection{Generalizability for the Step-wise Loss Scaling Law}
+\label{app:generalizabilty_exp_stepwiseloss_scalinglaw}
+
+Following the same approach as in Section~\ref{app:generalizabilty_exp_totalloss_scalinglaw}, we seek to explore the performance of the Scaling Law on unseen data points, specifically regarding the generalizability of the Scaling Law. In this subsection, we explore the generalizability of the Step-wise Loss Scaling Law from three aspects: model size generalizability, training data generalizability, and recurrent step generalizability. The evaluation metric remains the coefficient of determination $R^2$. To evaluate performance on unseen data points, we will calculate the coefficient of determination using all data points, while fitting will only use a subset of the data points.
+
+\textbf{Model Size Generalizability} 
+The Scaling Law experiments include five different model sizes: 53M, 134M, 374M, 778M, and 1.364B. To verify the generalizability of model size, we select three of these as fitting data points. In each fitting experiment, the Scaling Law does not have access to the remaining two model size data points during fitting, ensuring the reasonableness and validity of the results through repeated experiments. 
+Specifically, to save on resources, we have conducted experiments only for max recurrent step of 2 and 4, resulting in a total of $\binom{5}{3} \times 2 = 20$ small experiments.
+The final experimental results show that for max recurrent step of 2, the average $R^2$ value is 0.8815, while for max recurrent step of 4, the average $R^2$ value is 0.797.
+This difference is not significant compared to the $R^2$ values obtained from the full data points (0.8898 and 0.8146), demonstrating the generalizability of the Step-wise Loss Scaling Law with respect to model size. To illustrate the results more clearly, we show example fitting curves in Figure~\ref{fig:stepwiseloss_scalinglaw_generalizability_modelsize}. It is important to note that using only a subset of data points for fitting may lead to miscalculations of the Scaling Law on unseen data points. Due to the nature of the power law, if the values are too small, it may result in a very large computed value, causing inaccuracies. To ensure the validity of the fitting, we can attempt to adjust the initial fitting values or impose some constraints on the fitting algorithm. For convenience, we adjust the initial fitting values to make the fitting formula effective over a broader range of data points.
+
+\textbf{Training Data Generalizability} 
+Following Section~\ref{app:generalizabilty_exp_totalloss_scalinglaw}, to ensure the validity of the fitting, we have selected the first 25\%, 50\%, and 75\% of the data points for fitting. In the case of max recurrent step of 2, the $R^2$ values are 0.8686, 0.8882, and 0.8896, respectively. For max recurrent step of 4, the $R^2$ values are 0.793, 0.813, and 0.8142. 
+It can be observed that as the number of fitting data points increases, the fitting accuracy improves. This aligns with the intuition that fitting with more data points generally yields better results. 
+Additionally, these results are similar to those obtained from fitting with the full data points (0.8898 and 0.8146), demonstrating the generalizability of the Step-wise Loss Scaling Law with respect to training data.
+
+\textbf{Recurrent Step Generalizability} In the case of max recurrent step equal to 2, there are only two recurrent step values, making it unreasonable to conduct generalizability experiments. Therefore, we choose to perform experiments with max recurrent step equal to 4. In this situation, we have four different recurrent step values: 1, 2, 3, and 4. We randomly select three of these as fitting data points, resulting in a total of $\binom{4}{3}=4$ experiments. The average $R^2$ value obtained from these four experiments is 0.8118, which is similar to the $R^2$ value of 0.8146 obtained from the full data points, demonstrating the generalizability of the Step-wise Loss Scaling Law with respect to recurrent step. Figure~\ref{fig:stepwiseloss_scalinglaw_generalizability_recurrentstep} presents a specific example, showing a high degree of consistency between the fitted curve and the actual curve.
+
+\begin{figure}[htbp!]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/scalinglaw_plots_stepwiseloss_scalinglaw_generalizability_modelsize_maxrecurrentstep_4.pdf}
+    \caption{Illustration of model size generalizability for the Step-wise Loss Scaling Law. The fitting data comprises three medium model sizes: 134M, 374M, and 778M. To verify the fitting consistency of the model on unseen larger model size 1.364B and unseen smaller model size 53M, we can observe that the predicted curves reflect the trends of the actual data points, demonstrating the generalizability of the Step-wise Loss Scaling Law with respect to the model size.}
+    \label{fig:stepwiseloss_scalinglaw_generalizability_modelsize}
+\end{figure}
+
+\begin{figure}[htbp!]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/scalinglaw_plots_stepwiseloss_scalinglaw_generalizability_recurrentstep_maxrecurrentstep_4.pdf}
+    \caption{Illustration of recurrent step generalizability for the Step-wise Loss Scaling Law. The fitting data includes three different recurrent steps: recurrent step = 1, 2, and 3. At the unseen data points of recurrent step = 4, the predicted curve closely matches the actual curve, demonstrating the generalizability of the Step-wise Loss Scaling Law with respect to recurrent step.}
+    \label{fig:stepwiseloss_scalinglaw_generalizability_recurrentstep}
+\end{figure}
+
+\end{document}
