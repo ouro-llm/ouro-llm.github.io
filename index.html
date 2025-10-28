@@ -141,14 +141,43 @@
                   <span>Code (Coming Soon)</span>
                   </a>
               </span>
-              <!-- Model Link. -->
+            </div>
+            <!-- Model Links -->
+            <div class="publication-links" style="margin-top: 1rem;">
               <span class="link-block">
                 <a href="#"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                     <i class="fa-solid fa-face-smiling-hands" style="color: #FFD43B;"></i>
                   </span>
-                  <span>Models (Coming Soon)</span>
+                  <span>Ouro-1.4B</span>
+                  </a>
+              </span>
+              <span class="link-block">
+                <a href="#"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fa-solid fa-face-smiling-hands" style="color: #FFD43B;"></i>
+                  </span>
+                  <span>Ouro-2.6B</span>
+                  </a>
+              </span>
+              <span class="link-block">
+                <a href="#"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fa-solid fa-brain" style="color: #9B59B6;"></i>
+                  </span>
+                  <span>Ouro-1.4B-Thinking</span>
+                  </a>
+              </span>
+              <span class="link-block">
+                <a href="#"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fa-solid fa-brain" style="color: #9B59B6;"></i>
+                  </span>
+                  <span>Ouro-2.6B-Thinking</span>
                   </a>
               </span>
             </div>
@@ -160,23 +189,33 @@
   </div>
 </section>
 
-<!-- Teaser -->
-<!-- <section class="hero teaser">
+<!-- News Section -->
+<section class="section" style="background-color: #f5f5f5; padding-top: 2rem; padding-bottom: 2rem;">
   <div class="container is-max-desktop">
-    <div class="hero-body">
-      <h2 class="subtitle has-text-centered">
-        <img src="static/images/puffin.png"/>
-        <span class="dnerf">Puffin-Zero</span> is an open reasoning language model that demonstrates the potential of
-        large-scale RL training from pretrained checkpoints on solving competition-level math problems.
-      </h2>
-      <h2 class="subtitle has-text-centered">
-        <img src="static/images/score.png"/>
-        <span class="dnerf">Puffin-Zero</span> achieves 45.4 points on AIME 2024, a comparable performance to DeepSeek-R1-Zero-
-        Qwen-32B.
-      </h2>
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">📢 News</h2>
+        <div class="content">
+          <div class="notification is-info">
+            <p style="font-size: 0.9em; color: #555; margin-bottom: 1em;">
+              <strong>October 28, 2025</strong>
+            </p>
+            <p style="font-size: 1.1em;">
+              <strong>Coming Soon:</strong> We are actively working on integrating Ouro models with popular inference frameworks!
+            </p>
+            <ul style="text-align: left; margin-top: 1em;">
+              <li><strong>vLLM Integration:</strong> High-throughput and memory-efficient inference support is under development</li>
+              <li><strong>SGLang Integration:</strong> Structured generation and fast inference support is coming soon</li>
+            </ul>
+            <p style="margin-top: 1em; font-style: italic;">
+              Stay tuned for updates! Follow our GitHub repository for the latest developments.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</section> -->
+</section>
 
 <section class="section">
   <div class="container is-max-desktop">
@@ -279,81 +318,6 @@
           <p>
             The architecture uses standard decoder-only Transformer with <b>Rotary Position Embeddings (RoPE)</b>, <b>SwiGLU activation</b>, and <b>sandwich normalization</b> for enhanced training stability with deep recurrent computation.
           </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <!-- Models -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Model Family</h2>
-        <div class="content has-text-justified">
-          <p>
-            We release four models in the Ouro family, offering both base and reasoning-focused variants:
-          </p>
-          
-          <h3 class="title is-4">Base Models</h3>
-          <div class="box">
-            <h4><b>Ouro-1.4B</b></h4>
-            <p>
-              A 1.4 billion parameter looped language model with 4 recurrent steps (R4). This compact model matches the performance of 3-4B standard transformer models across diverse benchmarks, demonstrating exceptional parameter efficiency.
-            </p>
-            <p><i class="fa-solid fa-link"></i> <a href="#">HuggingFace (Coming Soon)</a></p>
-          </div>
-
-          <div class="box">
-            <h4><b>Ouro-2.6B</b></h4>
-            <p>
-              A 2.6 billion parameter looped language model with 4 recurrent steps (R4). This model rivals 7-8B standard transformer models, showing remarkable capability on reasoning-intensive tasks while maintaining deployment efficiency.
-            </p>
-            <p><i class="fa-solid fa-link"></i> <a href="#">HuggingFace (Coming Soon)</a></p>
-          </div>
-
-          <h3 class="title is-4">Reasoning-Focused Models</h3>
-          <div class="box">
-            <h4><b>Ouro-1.4B-Thinking</b></h4>
-            <p>
-              The reasoning-enhanced version of Ouro-1.4B, fine-tuned with specialized Reasoning SFT. This model excels at multi-step reasoning tasks and complex problem-solving scenarios.
-            </p>
-            <p><i class="fa-solid fa-link"></i> <a href="#">HuggingFace (Coming Soon)</a></p>
-          </div>
-
-          <div class="box">
-            <h4><b>Ouro-2.6B-Thinking</b></h4>
-            <p>
-              The reasoning-enhanced version of Ouro-2.6B, fine-tuned with specialized Reasoning SFT. This is our most capable model, combining the advantages of looped architecture with enhanced reasoning capabilities.
-            </p>
-            <p><i class="fa-solid fa-link"></i> <a href="#">HuggingFace (Coming Soon)</a></p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section" style="background-color: #f5f5f5;">
-  <div class="container is-max-desktop">
-    <!-- News -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">📢 News</h2>
-        <div class="content">
-          <div class="notification is-info">
-            <p style="font-size: 1.1em;">
-              <strong>Coming Soon:</strong> We are actively working on integrating Ouro models with popular inference frameworks!
-            </p>
-            <ul style="text-align: left; margin-top: 1em;">
-              <li><strong>vLLM Integration:</strong> High-throughput and memory-efficient inference support is under development</li>
-              <li><strong>SGLang Integration:</strong> Structured generation and fast inference support is coming soon</li>
-            </ul>
-            <p style="margin-top: 1em; font-style: italic;">
-              Stay tuned for updates! Follow our GitHub repository for the latest developments.
-            </p>
-          </div>
         </div>
       </div>
     </div>
